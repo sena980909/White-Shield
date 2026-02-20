@@ -1,10 +1,9 @@
 /**
- * Shared UI strings and messages.
+ * Shared UI strings - softer, commander-style feedback.
  */
 var WS = window.WS || {};
 
 WS.strings = {
-  // Meta command responses
   help: [
     '사용 가능한 명령어:',
     '  help   - 이 도움말 표시',
@@ -17,17 +16,26 @@ WS.strings = {
 
   hintPrefix: '[힌트]',
   hintExhausted: '더 이상 힌트가 없습니다. 위의 힌트를 참고하세요.',
-  autoHintPrefix: '고전하고 계시는군요. 힌트를 드리겠습니다:',
 
   clearConfirm: '화면을 초기화했습니다.',
 
-  // Generic wrong-answer feedback
-  wrongGeneric: '올바른 명령어가 아닙니다. 다시 시도하세요.',
-  wrongPartial: '방향은 맞습니다! 하지만 명령어가 정확하지 않습니다.',
+  // Rotating wrong-answer messages (commander speaks, softer tone)
+  wrongGeneric: [
+    '[단장] 음... 이건 아닌 것 같은데? 다시 시도해보게, {name}.',
+    '[단장] 좋은 시도야. 하지만 다른 접근이 필요해.',
+    '[단장] 그건 지금 상황엔 맞지 않아. 목표를 다시 확인해봐.',
+    '[단장] 아쉽군, {name}. 한번 더 생각해보게.',
+  ],
 
-  // Status
+  wrongPartial: [
+    '[단장] 오, 방향은 맞아! 옵션이나 인자를 확인해보게.',
+    '[단장] 거의 다 왔는데! 조금만 수정해봐, {name}.',
+    '[단장] 맞는 방향이야. 세부 옵션을 좀 더 다듬어보게.',
+  ],
+
+  autoHintPrefix: '[단장] 좀 막히는 모양이군. 내가 힌트를 하나 주지:',
+
   statusFormat: '현재 임무: {title} | 진행: {current}/{total} 단계',
 
-  // Quit
   quitConfirm: '작전을 중단하시겠습니까? 현재 진행 상황은 저장되지 않습니다.',
 };

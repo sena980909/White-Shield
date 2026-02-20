@@ -1,5 +1,5 @@
 /**
- * Main - Bootstrap module. Assembles all modules and starts the game.
+ * Main - Bootstrap with nickname prompt and intro sequence.
  */
 var WS = window.WS || {};
 
@@ -30,15 +30,6 @@ var BOOT_LINES = [
   { text: '', 'class': '' },
 ];
 
-var INTRO_LINES = [
-  { text: '당신은 사이버 보안 특수팀 소속 요원입니다.', 'class': 'narrator', delay: 200 },
-  { text: '단장의 지시를 받아 시스템을 방어하고 취약점을 해결합니다.', 'class': 'narrator', delay: 200 },
-  { text: '', 'class': '' },
-  { text: '명령어를 입력하여 임무를 수행하세요.', 'class': 'dim', delay: 100 },
-  { text: 'help - 도움말 | hint - 힌트 | clear - 화면 초기화', 'class': 'dim', delay: 400 },
-  { text: '', 'class': '' },
-];
-
 document.addEventListener('DOMContentLoaded', async function() {
   var containerEl = document.getElementById('terminal');
   var audio = new WS.Audio();
@@ -52,27 +43,48 @@ document.addEventListener('DOMContentLoaded', async function() {
   var bgm = new WS.BGM();
 
   // Boot sequence
-  await showIntro(terminal);
+  for (var i = 0; i < ASCII_LOGO.length; i++) {
+    terminal.printLine(ASCII_LOGO[i], 'ascii-art');
+  }
+  await wait(500);
+  await terminal.typeLines(BOOT_LINES);
+
+  // ── Nickname Prompt ──
+  await terminal.typeLine('[시스템] 보안 터미널 접속 확인', 'system', 20);
+  await terminal.typeLine('[시스템] 신원 확인이 필요합니다.', 'system', 20);
+  terminal.printBlank();
+  await terminal.typeLine('콜사인(닉네임)을 입력하세요:', 'objective', 25);
+
+  var nickname = '';
+  while (!nickname.trim()) {
+    nickname = await terminal.waitForInput();
+    if (!nickname.trim()) {
+      await terminal.typeLine('[시스템] 콜사인을 입력해야 합니다.', 'system', 20);
+    }
+  }
+  WS.playerName = nickname.trim();
+
+  terminal.printBlank();
+  await terminal.typeLine('[단장] ' + WS.playerName + '... 좋은 콜사인이군.', 'commander', 25);
+  await wait(300);
+  await terminal.typeLine('[단장] 나는 이 작전의 총 지휘관, 단장이다.', 'commander', 25);
+  await wait(200);
+  await terminal.typeLine('[단장] 오늘 네가 맡을 작전은 "Operation: White Shield".', 'commander', 25);
+  await wait(200);
+  await terminal.typeLine('[단장] 우리 본부 서버가 해킹 공격을 받고 있다.', 'commander', 25);
+  await terminal.typeLine('[단장] 네 임무는 공격을 분석하고, 시스템을 방어하는 것이야.', 'commander', 25);
+  await wait(200);
+  terminal.printBlank();
+  await terminal.typeLine('help - 도움말 | hint - 힌트 | clear - 화면 초기화', 'dim', 15);
+  terminal.printBlank();
+  await terminal.typeLine('[단장] 준비됐나, ' + WS.playerName + '? 바로 시작하지.', 'commander', 25);
+  terminal.printBlank();
+  await wait(500);
 
   // Start game
   var game = new WS.StageManager(terminal, WS.stages, audio);
   await game.start();
 });
-
-async function showIntro(terminal) {
-  // ASCII logo
-  for (var i = 0; i < ASCII_LOGO.length; i++) {
-    terminal.printLine(ASCII_LOGO[i], 'ascii-art');
-  }
-
-  await wait(500);
-
-  // Boot lines
-  await terminal.typeLines(BOOT_LINES);
-
-  // Intro
-  await terminal.typeLines(INTRO_LINES);
-}
 
 function wait(ms) {
   return new Promise(function(resolve) { setTimeout(resolve, ms); });

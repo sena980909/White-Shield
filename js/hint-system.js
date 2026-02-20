@@ -1,5 +1,6 @@
 /**
  * HintSystem - Tracks wrong attempts and provides progressive hints.
+ * Auto-hint triggers after 2 wrong attempts for faster progression.
  */
 var WS = window.WS || {};
 
@@ -7,14 +8,13 @@ WS.HintSystem = class HintSystem {
   constructor() {
     this.wrongCount = 0;
     this.hintIndex = 0;
-    this.autoHintThreshold = 3;
+    this.autoHintThreshold = 2; // trigger fast - keep players moving
   }
 
   /** Record a wrong attempt. Returns true if auto-hint should trigger. */
   recordWrongAttempt() {
     this.wrongCount++;
-    return this.wrongCount >= this.autoHintThreshold &&
-           ((this.wrongCount - this.autoHintThreshold) % 2 === 0 || this.wrongCount === this.autoHintThreshold);
+    return this.wrongCount >= this.autoHintThreshold;
   }
 
   /**
