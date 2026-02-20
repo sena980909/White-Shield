@@ -1,0 +1,50 @@
+/**
+ * HintSystem - Tracks wrong attempts and provides progressive hints.
+ */
+var WS = window.WS || {};
+
+WS.HintSystem = class HintSystem {
+  constructor() {
+    this.wrongCount = 0;
+    this.hintIndex = 0;
+    this.autoHintThreshold = 3;
+  }
+
+  /** Record a wrong attempt. Returns true if auto-hint should trigger. */
+  recordWrongAttempt() {
+    this.wrongCount++;
+    return this.wrongCount >= this.autoHintThreshold &&
+           ((this.wrongCount - this.autoHintThreshold) % 2 === 0 || this.wrongCount === this.autoHintThreshold);
+  }
+
+  /**
+   * Get the next hint from the hints array.
+   * Returns { text, remaining } or null if no hints left.
+   */
+  getNextHint(hints) {
+    if (!hints || hints.length === 0) {
+      return null;
+    }
+
+    if (this.hintIndex >= hints.length) {
+      return {
+        text: hints[hints.length - 1],
+        remaining: 0,
+      };
+    }
+
+    var text = hints[this.hintIndex];
+    this.hintIndex++;
+
+    return {
+      text: text,
+      remaining: hints.length - this.hintIndex,
+    };
+  }
+
+  /** Reset state for a new stage or new command within a stage. */
+  resetForNewStage() {
+    this.wrongCount = 0;
+    this.hintIndex = 0;
+  }
+};

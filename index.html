@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Operation: White Shield</title>
+  <link rel="stylesheet" href="css/terminal.css">
+  <link rel="stylesheet" href="css/effects.css">
+</head>
+<body>
+  <div id="crt-overlay"></div>
+
+  <!-- BGM Controls -->
+  <div id="bgm-panel">
+    <button id="bgm-toggle" title="BGM ON/OFF">&#9835;</button>
+    <input type="range" id="bgm-volume" min="0" max="100" value="30" title="볼륨">
+    <span id="bgm-vol-label">30%</span>
+  </div>
+
+  <div id="terminal">
+    <div id="output"></div>
+    <div id="input-line" class="hidden">
+      <span id="prompt" class="user-input">$ </span>
+      <input type="text" id="command-input" spellcheck="false" autocomplete="off" autocapitalize="off">
+      <span id="cursor" class="cursor"></span>
+    </div>
+  </div>
+
+  <!-- BGM Audio Element -->
+  <audio id="bgm-audio" loop preload="auto">
+    <source src="bgm/White Shield.mp3" type="audio/mpeg">
+  </audio>
+
+  <!-- Load order matters: data first, then engine, then bootstrap -->
+  <script src="data/strings.js"></script>
+  <script src="data/stages.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/parser.js"></script>
+  <script src="js/hint-system.js"></script>
+  <script src="js/terminal.js"></script>
+  <script src="js/stage-manager.js"></script>
+  <script src="js/bgm.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

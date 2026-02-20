@@ -1,0 +1,532 @@
+/**
+ * Stage definitions for Operation: White Shield
+ *
+ * speaker classes: commander, system, narrator, enemy, objective, success, error, dim
+ */
+var WS = window.WS || {};
+
+WS.stages = [
+  /* ════════════════════════════════════════════════════
+   * STAGE 1: 인증 로그 확인
+   * ════════════════════════════════════════════════════ */
+  {
+    id: 'stage_1',
+    title: '임무 1: 침입 징후 탐지',
+    briefing: [
+      { text: '', class: '' },
+      { text: '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', class: 'dim' },
+      { text: '[통신 수신 중...]', class: 'system', delay: 800 },
+      { text: '', class: '' },
+      { text: '[단장] 요원, 들리나?', class: 'commander', delay: 400 },
+      { text: '[단장] 본부 서버에 비정상적인 접근 시도가 감지됐다.', class: 'commander', delay: 300 },
+      { text: '[단장] 누군가 우리 시스템에 침투하려 하고 있어.', class: 'commander', delay: 300 },
+      { text: '[단장] 먼저 인증 로그를 확인해서 공격의 실체를 파악해라.', class: 'commander', delay: 300 },
+      { text: '', class: '' },
+    ],
+    objective: [
+      { text: '┌─ 임무 목표 ─────────────────────────────┐', class: 'objective' },
+      { text: '│ 인증 로그 파일을 확인하여 공격 패턴을 분석하라 │', class: 'objective' },
+      { text: '│ 파일 경로: /var/log/auth.log              │', class: 'objective' },
+      { text: '└──────────────────────────────────────────┘', class: 'objective' },
+      { text: '', class: '' },
+    ],
+    commands: [
+      {
+        id: 'check_auth_log',
+        exact: 'cat /var/log/auth.log',
+        alts: [
+          'cat /var/log/auth.log',
+          'less /var/log/auth.log',
+          'more /var/log/auth.log',
+          'tail /var/log/auth.log',
+          'tail -f /var/log/auth.log',
+          'vi /var/log/auth.log',
+          'vim /var/log/auth.log',
+          'nano /var/log/auth.log',
+          'head /var/log/auth.log',
+        ],
+        keywords: ['auth.log'],
+        pattern: '(cat|less|more|tail|head|vi|vim|nano|view)\\s+.*auth\\.log',
+        wrongFeedback: {
+          partial: '로그 파일을 확인하려면 파일 경로를 정확히 지정해야 합니다.',
+        },
+      },
+    ],
+    interstitial: {
+      check_auth_log: [
+        { text: '', class: '' },
+        { text: '[시스템] /var/log/auth.log 출력 중...', class: 'system', delay: 500 },
+        { text: '', class: '' },
+        { text: 'Feb 21 03:14:07 server sshd[8341]: Failed password for root from 192.168.45.102 port 44231', class: 'dim', speed: 10 },
+        { text: 'Feb 21 03:14:08 server sshd[8341]: Failed password for root from 192.168.45.102 port 44231', class: 'dim', speed: 10 },
+        { text: 'Feb 21 03:14:08 server sshd[8342]: Failed password for root from 192.168.45.102 port 44232', class: 'dim', speed: 10 },
+        { text: 'Feb 21 03:14:09 server sshd[8343]: Failed password for root from 192.168.45.102 port 44233', class: 'dim', speed: 10 },
+        { text: 'Feb 21 03:14:09 server sshd[8344]: Failed password for admin from 192.168.45.102 port 44234', class: 'dim', speed: 10 },
+        { text: 'Feb 21 03:14:10 server sshd[8345]: Failed password for admin from 192.168.45.102 port 44235', class: 'dim', speed: 10 },
+        { text: '... (총 2,847건의 실패한 로그인 시도)', class: 'system', speed: 10 },
+        { text: 'Feb 21 03:22:51 server sshd[8902]: Accepted password for root from 192.168.45.102 port 44891', class: 'error', speed: 10 },
+        { text: '', class: '' },
+        { text: '[경고] 브루트포스 공격 감지!', class: 'error', delay: 400 },
+        { text: '[경고] 192.168.45.102에서 2,847회 로그인 시도 → root 계정 침투 성공', class: 'error', delay: 200 },
+        { text: '', class: '' },
+      ],
+    },
+    success: [
+      { text: '[단장] 좋아, 상황이 명확해졌다.', class: 'commander', delay: 300 },
+      { text: '[단장] 192.168.45.102... 이 IP에서 브루트포스로 root 계정을 뚫었군.', class: 'commander', delay: 300 },
+      { text: '[단장] 지금 당장 저 IP를 차단해야 한다. 다음 임무로 넘어가자.', class: 'commander', delay: 500 },
+      { text: '', class: '' },
+      { text: '✓ 임무 1 완료: 침입 징후 탐지 성공', class: 'success', delay: 600 },
+      { text: '', class: '' },
+    ],
+    hints: [
+      '로그 파일의 내용을 확인하는 리눅스 명령어를 사용하세요.',
+      '파일의 내용을 출력하는 명령어: cat, less, more, tail 등',
+      '정답: cat /var/log/auth.log',
+    ],
+    next: 'stage_2',
+  },
+
+  /* ════════════════════════════════════════════════════
+   * STAGE 2: 악성 IP 차단
+   * ════════════════════════════════════════════════════ */
+  {
+    id: 'stage_2',
+    title: '임무 2: 악성 IP 차단',
+    briefing: [
+      { text: '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', class: 'dim' },
+      { text: '', class: '' },
+      { text: '[단장] 공격자 IP 192.168.45.102를 방화벽에서 차단해라.', class: 'commander', delay: 300 },
+      { text: '[단장] iptables를 사용해서 해당 IP의 모든 접근을 막아야 한다.', class: 'commander', delay: 300 },
+      { text: '[단장] 더 이상의 침투를 허용하면 안 돼.', class: 'commander', delay: 300 },
+      { text: '', class: '' },
+    ],
+    objective: [
+      { text: '┌─ 임무 목표 ──────────────────────────────────┐', class: 'objective' },
+      { text: '│ iptables로 공격자 IP(192.168.45.102)를 차단하라 │', class: 'objective' },
+      { text: '└───────────────────────────────────────────────┘', class: 'objective' },
+      { text: '', class: '' },
+    ],
+    commands: [
+      {
+        id: 'block_ip',
+        exact: 'iptables -A INPUT -s 192.168.45.102 -j DROP',
+        alts: [
+          'sudo iptables -A INPUT -s 192.168.45.102 -j DROP',
+          'iptables -I INPUT -s 192.168.45.102 -j DROP',
+          'sudo iptables -I INPUT -s 192.168.45.102 -j DROP',
+          'iptables -A INPUT -s 192.168.45.102 -j REJECT',
+          'sudo iptables -A INPUT -s 192.168.45.102 -j REJECT',
+        ],
+        keywords: ['iptables', '192.168.45.102', 'drop'],
+        pattern: '(sudo\\s+)?iptables\\s+-(A|I)\\s+INPUT\\s+-s\\s+192\\.168\\.45\\.102\\s+-j\\s+(DROP|REJECT)',
+        wrongFeedback: {
+          partial: 'iptables 명령어를 사용하는 건 맞지만, 올바른 옵션을 사용하세요. INPUT 체인에 규칙을 추가해야 합니다.',
+        },
+      },
+    ],
+    interstitial: {
+      block_ip: [
+        { text: '', class: '' },
+        { text: '[시스템] 방화벽 규칙 적용 중...', class: 'system', delay: 600 },
+        { text: '[시스템] iptables: 규칙이 INPUT 체인에 추가되었습니다.', class: 'system', delay: 300 },
+        { text: '[시스템] 192.168.45.102 → 모든 인바운드 트래픽 차단 완료', class: 'system', delay: 200 },
+        { text: '', class: '' },
+      ],
+    },
+    success: [
+      { text: '[단장] 잘했다. 공격자의 접근 경로를 차단했어.', class: 'commander', delay: 300 },
+      { text: '[단장] 하지만 안심하긴 이르다. 이미 침투에 성공한 상태니까.', class: 'commander', delay: 300 },
+      { text: '[단장] 놈이 뭔가를 심어놨을 가능성이 높아. 프로세스를 확인해봐.', class: 'commander', delay: 500 },
+      { text: '', class: '' },
+      { text: '✓ 임무 2 완료: 악성 IP 차단 성공', class: 'success', delay: 600 },
+      { text: '', class: '' },
+    ],
+    hints: [
+      'iptables를 사용하여 특정 IP를 차단하는 규칙을 추가하세요.',
+      'iptables -A INPUT -s [IP주소] -j DROP 형식입니다.',
+      '정답: iptables -A INPUT -s 192.168.45.102 -j DROP',
+    ],
+    next: 'stage_3',
+  },
+
+  /* ════════════════════════════════════════════════════
+   * STAGE 3: 백도어 프로세스 제거 (2단계)
+   * ════════════════════════════════════════════════════ */
+  {
+    id: 'stage_3',
+    title: '임무 3: 백도어 프로세스 제거',
+    briefing: [
+      { text: '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', class: 'dim' },
+      { text: '', class: '' },
+      { text: '[단장] 공격자가 백도어를 설치했을 수 있다.', class: 'commander', delay: 300 },
+      { text: '[단장] 실행 중인 프로세스를 확인해서 수상한 놈을 찾아내라.', class: 'commander', delay: 300 },
+      { text: '', class: '' },
+    ],
+    objective: [
+      { text: '┌─ 임무 목표 ─────────────────────────────────┐', class: 'objective' },
+      { text: '│ 1단계: 실행 중인 프로세스 목록을 확인하라       │', class: 'objective' },
+      { text: '│ 2단계: 악성 프로세스를 강제 종료하라            │', class: 'objective' },
+      { text: '└──────────────────────────────────────────────┘', class: 'objective' },
+      { text: '', class: '' },
+    ],
+    commands: [
+      {
+        id: 'list_processes',
+        exact: 'ps -ef',
+        alts: [
+          'ps -ef', 'ps aux', 'ps -aux',
+          'sudo ps -ef', 'sudo ps aux',
+          'ps -e', 'ps -A',
+        ],
+        keywords: ['ps'],
+        pattern: '(sudo\\s+)?ps\\s+(-ef|-aux|aux|-e|-A)',
+        wrongFeedback: {
+          partial: '프로세스를 확인하는 명령어를 사용하세요.',
+        },
+      },
+      {
+        id: 'kill_backdoor',
+        exact: 'kill -9 31337',
+        alts: [
+          'kill -9 31337',
+          'sudo kill -9 31337',
+          'kill -SIGKILL 31337',
+          'sudo kill -SIGKILL 31337',
+          'kill -KILL 31337',
+        ],
+        keywords: ['kill', '31337'],
+        pattern: '(sudo\\s+)?kill\\s+(-9|-SIGKILL|-KILL)\\s+31337',
+        wrongFeedback: {
+          partial: 'kill 명령어로 프로세스를 종료하세요. PID는 아까 확인한 백도어 프로세스의 번호입니다.',
+        },
+      },
+    ],
+    interstitial: {
+      list_processes: [
+        { text: '', class: '' },
+        { text: '[시스템] 프로세스 목록 출력 중...', class: 'system', delay: 400 },
+        { text: '', class: '' },
+        { text: 'UID        PID  PPID  C STIME TTY      CMD', class: 'dim', speed: 10 },
+        { text: 'root         1     0  0 Jan01 ?        /sbin/init', class: 'dim', speed: 10 },
+        { text: 'root       412     1  0 Jan01 ?        /usr/sbin/sshd', class: 'dim', speed: 10 },
+        { text: 'root       518     1  0 Jan01 ?        /usr/sbin/cron', class: 'dim', speed: 10 },
+        { text: 'www-data   623     1  0 Jan01 ?        /usr/sbin/apache2', class: 'dim', speed: 10 },
+        { text: 'root     31337     1  0 03:23 ?        /tmp/.x11-backdoor', class: 'error', speed: 10 },
+        { text: 'root       891   412  0 03:25 ?        sshd: root@pts/0', class: 'dim', speed: 10 },
+        { text: '', class: '' },
+        { text: '[경고] 의심스러운 프로세스 발견!', class: 'error', delay: 400 },
+        { text: '[경고] PID 31337 - /tmp/.x11-backdoor (숨겨진 백도어 프로세스)', class: 'error', delay: 200 },
+        { text: '', class: '' },
+        { text: '[단장] 찾았다! PID 31337... 백도어가 틀림없어.', class: 'commander', delay: 300 },
+        { text: '[단장] 즉시 해당 프로세스를 강제 종료해라!', class: 'commander', delay: 300 },
+        { text: '', class: '' },
+      ],
+      kill_backdoor: [
+        { text: '', class: '' },
+        { text: '[시스템] 프로세스 종료 신호 전송 중...', class: 'system', delay: 500 },
+        { text: '[시스템] PID 31337 (/tmp/.x11-backdoor) - 프로세스 강제 종료 완료', class: 'system', delay: 300 },
+        { text: '', class: '' },
+      ],
+    },
+    success: [
+      { text: '[단장] 백도어 프로세스를 제거했다. 잘했어.', class: 'commander', delay: 300 },
+      { text: '[단장] 그런데 실행 파일이 아직 디스크에 남아있을 거야.', class: 'commander', delay: 300 },
+      { text: '[단장] 파일까지 완전히 삭제해야 재발을 막을 수 있다.', class: 'commander', delay: 500 },
+      { text: '', class: '' },
+      { text: '✓ 임무 3 완료: 백도어 프로세스 제거 성공', class: 'success', delay: 600 },
+      { text: '', class: '' },
+    ],
+    hints: [
+      '실행 중인 프로세스를 확인하는 명령어를 사용하세요.',
+      'ps 명령어로 프로세스 목록을 확인할 수 있습니다. (예: ps -ef)',
+      '1단계 정답: ps -ef | 2단계: kill -9 [PID번호]',
+    ],
+    next: 'stage_4',
+  },
+
+  /* ════════════════════════════════════════════════════
+   * STAGE 4: 백도어 파일 삭제 (2단계)
+   * ════════════════════════════════════════════════════ */
+  {
+    id: 'stage_4',
+    title: '임무 4: 백도어 파일 삭제',
+    briefing: [
+      { text: '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', class: 'dim' },
+      { text: '', class: '' },
+      { text: '[단장] 이제 /tmp 디렉토리에 숨겨진 백도어 파일을 찾아서 삭제해라.', class: 'commander', delay: 300 },
+      { text: '[단장] 숨김 파일까지 확인해야 한다. 놈들은 항상 파일을 숨기지.', class: 'commander', delay: 300 },
+      { text: '', class: '' },
+    ],
+    objective: [
+      { text: '┌─ 임무 목표 ──────────────────────────────┐', class: 'objective' },
+      { text: '│ 1단계: /tmp 디렉토리의 숨김 파일을 확인하라  │', class: 'objective' },
+      { text: '│ 2단계: 백도어 파일을 삭제하라               │', class: 'objective' },
+      { text: '└───────────────────────────────────────────┘', class: 'objective' },
+      { text: '', class: '' },
+    ],
+    commands: [
+      {
+        id: 'list_tmp',
+        exact: 'ls -la /tmp',
+        alts: [
+          'ls -la /tmp', 'ls -al /tmp', 'ls -la /tmp/',
+          'ls -al /tmp/', 'ls -lah /tmp', 'ls -lha /tmp',
+          'sudo ls -la /tmp', 'sudo ls -al /tmp',
+          'ls -a /tmp', 'ls -la /tmp/*',
+        ],
+        keywords: ['ls', '/tmp'],
+        pattern: '(sudo\\s+)?ls\\s+(-[la]+h?|-[alh]+)\\s+/tmp',
+        wrongFeedback: {
+          partial: '/tmp 디렉토리의 파일을 숨김 파일 포함하여 나열해야 합니다.',
+        },
+      },
+      {
+        id: 'remove_backdoor',
+        exact: 'rm /tmp/.x11-backdoor',
+        alts: [
+          'rm /tmp/.x11-backdoor',
+          'sudo rm /tmp/.x11-backdoor',
+          'rm -f /tmp/.x11-backdoor',
+          'sudo rm -f /tmp/.x11-backdoor',
+        ],
+        keywords: ['rm', '.x11-backdoor'],
+        pattern: '(sudo\\s+)?rm\\s+(-f\\s+)?/tmp/\\.x11-backdoor',
+        wrongFeedback: {
+          partial: 'rm 명령어로 파일을 삭제하세요. 정확한 파일 경로를 지정해야 합니다.',
+        },
+      },
+    ],
+    interstitial: {
+      list_tmp: [
+        { text: '', class: '' },
+        { text: '[시스템] /tmp 디렉토리 목록 출력 중...', class: 'system', delay: 400 },
+        { text: '', class: '' },
+        { text: 'total 48', class: 'dim', speed: 10 },
+        { text: 'drwxrwxrwt 10 root root 4096 Feb 21 03:23 .', class: 'dim', speed: 10 },
+        { text: 'drwxr-xr-x 23 root root 4096 Jan  1 00:00 ..', class: 'dim', speed: 10 },
+        { text: '-rw-r--r--  1 root root  178 Feb 20 14:22 .font-unix', class: 'dim', speed: 10 },
+        { text: '-rwxr-xr-x  1 root root 8192 Feb 21 03:23 .x11-backdoor', class: 'error', speed: 10 },
+        { text: 'drwx------  2 root root 4096 Feb 20 08:00 systemd-private', class: 'dim', speed: 10 },
+        { text: '-rw-------  1 root root 1024 Feb 21 03:23 .x11-backdoor.log', class: 'error', speed: 10 },
+        { text: '', class: '' },
+        { text: '[경고] 악성 파일 발견: .x11-backdoor (실행 파일, 8192 bytes)', class: 'error', delay: 400 },
+        { text: '[경고] 관련 로그 파일: .x11-backdoor.log', class: 'error', delay: 200 },
+        { text: '', class: '' },
+        { text: '[단장] 찾았다. .x11-backdoor 파일을 즉시 삭제해라!', class: 'commander', delay: 300 },
+        { text: '', class: '' },
+      ],
+      remove_backdoor: [
+        { text: '', class: '' },
+        { text: '[시스템] 파일 삭제 중...', class: 'system', delay: 500 },
+        { text: '[시스템] /tmp/.x11-backdoor - 삭제 완료', class: 'system', delay: 200 },
+        { text: '[시스템] /tmp/.x11-backdoor.log - 관련 파일 자동 정리 완료', class: 'system', delay: 200 },
+        { text: '', class: '' },
+      ],
+    },
+    success: [
+      { text: '[단장] 백도어 파일까지 깨끗하게 제거했다.', class: 'commander', delay: 300 },
+      { text: '[단장] 이제 근본적인 문제를 해결할 차례야.', class: 'commander', delay: 300 },
+      { text: '[단장] 놈이 root로 SSH 접속에 성공한 건 설정 취약점 때문이다.', class: 'commander', delay: 300 },
+      { text: '[단장] SSH 설정을 강화해서 재침투를 막아야 한다.', class: 'commander', delay: 500 },
+      { text: '', class: '' },
+      { text: '✓ 임무 4 완료: 백도어 파일 삭제 성공', class: 'success', delay: 600 },
+      { text: '', class: '' },
+    ],
+    hints: [
+      '숨김 파일까지 보려면 ls 명령어에 -a 옵션을 사용하세요.',
+      '1단계: ls -la /tmp 으로 숨김 파일을 확인하세요.',
+      '1단계 정답: ls -la /tmp | 2단계: rm /tmp/.x11-backdoor',
+    ],
+    next: 'stage_5',
+  },
+
+  /* ════════════════════════════════════════════════════
+   * STAGE 5: SSH 취약점 패치 (3단계)
+   * ════════════════════════════════════════════════════ */
+  {
+    id: 'stage_5',
+    title: '임무 5: SSH 보안 강화',
+    briefing: [
+      { text: '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', class: 'dim' },
+      { text: '', class: '' },
+      { text: '[단장] 마지막 임무다.', class: 'commander', delay: 300 },
+      { text: '[단장] SSH 설정에서 root 직접 로그인을 비활성화해야 해.', class: 'commander', delay: 300 },
+      { text: '[단장] 설정 파일을 열어서 수정하고, SSH 서비스를 재시작해라.', class: 'commander', delay: 300 },
+      { text: '[단장] 이걸로 같은 방법의 재침투는 불가능해질 거다.', class: 'commander', delay: 300 },
+      { text: '', class: '' },
+    ],
+    objective: [
+      { text: '┌─ 임무 목표 ────────────────────────────────────┐', class: 'objective' },
+      { text: '│ 1단계: SSH 설정 파일을 열어라                     │', class: 'objective' },
+      { text: '│ 2단계: PermitRootLogin 설정을 no로 변경하라        │', class: 'objective' },
+      { text: '│ 3단계: SSH 서비스를 재시작하여 설정을 적용하라       │', class: 'objective' },
+      { text: '└────────────────────────────────────────────────┘', class: 'objective' },
+      { text: '', class: '' },
+    ],
+    commands: [
+      {
+        id: 'open_sshd_config',
+        exact: 'vi /etc/ssh/sshd_config',
+        alts: [
+          'vi /etc/ssh/sshd_config',
+          'vim /etc/ssh/sshd_config',
+          'nano /etc/ssh/sshd_config',
+          'sudo vi /etc/ssh/sshd_config',
+          'sudo vim /etc/ssh/sshd_config',
+          'sudo nano /etc/ssh/sshd_config',
+          'cat /etc/ssh/sshd_config',
+          'sudo cat /etc/ssh/sshd_config',
+        ],
+        keywords: ['sshd_config'],
+        pattern: '(sudo\\s+)?(vi|vim|nano|cat|less|more|edit)\\s+/etc/ssh/sshd_config',
+        wrongFeedback: {
+          partial: 'SSH 설정 파일의 경로를 정확히 지정하세요: /etc/ssh/sshd_config',
+        },
+      },
+      {
+        id: 'set_permit_root',
+        exact: 'PermitRootLogin no',
+        alts: [
+          'permitrootlogin no',
+          'PermitRootLogin no',
+          'set PermitRootLogin no',
+        ],
+        keywords: ['permitrootlogin', 'no'],
+        pattern: '(set\\s+)?[Pp]ermit[Rr]oot[Ll]ogin\\s+no',
+        wrongFeedback: {
+          partial: 'PermitRootLogin 설정을 변경해야 합니다.',
+        },
+      },
+      {
+        id: 'restart_sshd',
+        exact: 'systemctl restart sshd',
+        alts: [
+          'systemctl restart sshd',
+          'sudo systemctl restart sshd',
+          'service sshd restart',
+          'sudo service sshd restart',
+          'systemctl restart ssh',
+          'sudo systemctl restart ssh',
+          'service ssh restart',
+          'sudo service ssh restart',
+          '/etc/init.d/sshd restart',
+          'sudo /etc/init.d/sshd restart',
+        ],
+        keywords: ['restart', 'ssh'],
+        pattern: '(sudo\\s+)?(systemctl\\s+restart\\s+ssh(d)?|service\\s+ssh(d)?\\s+restart|/etc/init\\.d/ssh(d)?\\s+restart)',
+        wrongFeedback: {
+          partial: 'SSH 서비스를 재시작하는 명령어를 사용하세요.',
+        },
+      },
+    ],
+    interstitial: {
+      open_sshd_config: [
+        { text: '', class: '' },
+        { text: '[시스템] /etc/ssh/sshd_config 파일 열기...', class: 'system', delay: 400 },
+        { text: '', class: '' },
+        { text: '# /etc/ssh/sshd_config', class: 'dim', speed: 10 },
+        { text: '# SSH 서버 설정 파일', class: 'dim', speed: 10 },
+        { text: '', class: '', speed: 0 },
+        { text: 'Port 22', class: 'dim', speed: 10 },
+        { text: 'Protocol 2', class: 'dim', speed: 10 },
+        { text: 'HostKey /etc/ssh/ssh_host_rsa_key', class: 'dim', speed: 10 },
+        { text: 'PermitRootLogin yes    # <-- 취약점!', class: 'error', speed: 10 },
+        { text: 'PasswordAuthentication yes', class: 'dim', speed: 10 },
+        { text: 'MaxAuthTries 6', class: 'dim', speed: 10 },
+        { text: '', class: '' },
+        { text: '[경고] PermitRootLogin이 yes로 설정되어 있습니다!', class: 'error', delay: 400 },
+        { text: '', class: '' },
+        { text: '[단장] 저거다! PermitRootLogin을 no로 바꿔라.', class: 'commander', delay: 300 },
+        { text: '', class: '' },
+      ],
+      set_permit_root: [
+        { text: '', class: '' },
+        { text: '[시스템] 설정 변경 적용 중...', class: 'system', delay: 400 },
+        { text: '[시스템] PermitRootLogin: yes → no', class: 'system', delay: 200 },
+        { text: '[시스템] 파일 저장 완료', class: 'system', delay: 200 },
+        { text: '', class: '' },
+        { text: '[단장] 좋아. 이제 SSH 서비스를 재시작해서 변경사항을 적용해라.', class: 'commander', delay: 300 },
+        { text: '', class: '' },
+      ],
+      restart_sshd: [
+        { text: '', class: '' },
+        { text: '[시스템] SSH 서비스 재시작 중...', class: 'system', delay: 800 },
+        { text: '[시스템] sshd.service - OpenSSH Server', class: 'system', delay: 300 },
+        { text: '[시스템]   Loaded: loaded (/lib/systemd/system/sshd.service)', class: 'dim', speed: 10 },
+        { text: '[시스템]   Active: active (running)', class: 'success', speed: 10 },
+        { text: '', class: '' },
+        { text: '[시스템] SSH 설정 적용 완료 - Root 직접 로그인 차단됨', class: 'success', delay: 300 },
+        { text: '', class: '' },
+      ],
+    },
+    success: [
+      { text: '[단장] 완벽하다, 요원.', class: 'commander', delay: 300 },
+      { text: '[단장] SSH 보안 설정이 강화되었다. 같은 방법으로는 절대 침투할 수 없어.', class: 'commander', delay: 300 },
+      { text: '[단장] 모든 임무를 성공적으로 완수했다!', class: 'commander', delay: 500 },
+      { text: '', class: '' },
+      { text: '✓ 임무 5 완료: SSH 보안 강화 성공', class: 'success', delay: 600 },
+      { text: '', class: '' },
+    ],
+    hints: [
+      'SSH 설정 파일을 편집기로 열어야 합니다. 파일 경로: /etc/ssh/sshd_config',
+      '1단계: vi /etc/ssh/sshd_config | 2단계: PermitRootLogin을 no로 설정',
+      '1단계: vi /etc/ssh/sshd_config | 2단계: PermitRootLogin no | 3단계: systemctl restart sshd',
+    ],
+    next: 'stage_6',
+  },
+
+  /* ════════════════════════════════════════════════════
+   * STAGE 6: 미션 완료 (엔딩)
+   * ════════════════════════════════════════════════════ */
+  {
+    id: 'stage_6',
+    title: '작전 완료',
+    briefing: [
+      { text: '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', class: 'dim' },
+      { text: '', class: '' },
+      { text: '[시스템] ═══════════════════════════════════', class: 'success' },
+      { text: '[시스템]   OPERATION: WHITE SHIELD - 작전 완료', class: 'success' },
+      { text: '[시스템] ═══════════════════════════════════', class: 'success' },
+      { text: '', class: '', delay: 500 },
+      { text: '┌─ 작전 결과 보고서 ─────────────────────────┐', class: 'objective' },
+      { text: '│                                            │', class: 'objective' },
+      { text: '│  [✓] 임무 1: 침입 징후 탐지     - 완료      │', class: 'success', speed: 15 },
+      { text: '│  [✓] 임무 2: 악성 IP 차단       - 완료      │', class: 'success', speed: 15 },
+      { text: '│  [✓] 임무 3: 백도어 프로세스 제거 - 완료      │', class: 'success', speed: 15 },
+      { text: '│  [✓] 임무 4: 백도어 파일 삭제    - 완료      │', class: 'success', speed: 15 },
+      { text: '│  [✓] 임무 5: SSH 보안 강화      - 완료      │', class: 'success', speed: 15 },
+      { text: '│                                            │', class: 'objective' },
+      { text: '│  작전 상태: 성공                             │', class: 'success' },
+      { text: '│                                            │', class: 'objective' },
+      { text: '└────────────────────────────────────────────┘', class: 'objective' },
+      { text: '', class: '', delay: 600 },
+      { text: '[단장] 요원, 훌륭했다.', class: 'commander', delay: 400 },
+      { text: '[단장] 네 덕분에 본부 서버를 지켜낼 수 있었어.', class: 'commander', delay: 300 },
+      { text: '[단장] 오늘 네가 수행한 작업을 정리하면:', class: 'commander', delay: 300 },
+      { text: '', class: '' },
+      { text: '  1. 인증 로그 분석으로 브루트포스 공격 탐지', class: 'narrator', speed: 20 },
+      { text: '  2. iptables로 공격자 IP 차단', class: 'narrator', speed: 20 },
+      { text: '  3. 악성 프로세스 식별 및 강제 종료', class: 'narrator', speed: 20 },
+      { text: '  4. 백도어 파일 탐지 및 삭제', class: 'narrator', speed: 20 },
+      { text: '  5. SSH 설정 강화로 재침투 방지', class: 'narrator', speed: 20 },
+      { text: '', class: '' },
+      { text: '[단장] 이것이 바로 화이트 해커가 하는 일이다.', class: 'commander', delay: 400 },
+      { text: '[단장] 공격자보다 한 발 앞서 시스템을 지키는 것.', class: 'commander', delay: 300 },
+      { text: '[단장] 수고했다, 요원. 다음 작전에서 또 보자.', class: 'commander', delay: 300 },
+      { text: '', class: '' },
+      { text: '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', class: 'dim' },
+      { text: '  Operation: White Shield - END', class: 'ascii-art', delay: 300 },
+      { text: '  화이트 해커의 길은 계속됩니다...', class: 'narrator', delay: 300 },
+      { text: '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', class: 'dim' },
+      { text: '', class: '' },
+      { text: '게임을 다시 시작하려면 페이지를 새로고침하세요.', class: 'dim' },
+    ],
+    objective: [],
+    commands: [],
+    interstitial: {},
+    success: [],
+    hints: [],
+    next: null,
+  },
+];

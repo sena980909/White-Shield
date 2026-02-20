@@ -1,0 +1,255 @@
+/* ── Reset & Base ── */
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #0a0a0a;
+  font-family: 'Courier New', 'Consolas', 'Liberation Mono', monospace;
+  font-size: 15px;
+  line-height: 1.5;
+  color: #c0c0c0;
+}
+
+/* ── Terminal Container ── */
+#terminal {
+  width: 100%;
+  height: 100%;
+  padding: 16px 20px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  z-index: 1;
+}
+
+#terminal::-webkit-scrollbar {
+  width: 6px;
+}
+
+#terminal::-webkit-scrollbar-track {
+  background: #0a0a0a;
+}
+
+#terminal::-webkit-scrollbar-thumb {
+  background: #333;
+  border-radius: 3px;
+}
+
+/* ── Output Area ── */
+#output {
+  flex: 1 1 auto;
+}
+
+#output .line {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  min-height: 1.5em;
+}
+
+#output .line:empty::after {
+  content: '\200b'; /* zero-width space to preserve height */
+}
+
+/* ── Input Line ── */
+#input-line {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+#input-line.hidden {
+  display: none;
+}
+
+#prompt {
+  flex-shrink: 0;
+  user-select: none;
+}
+
+#command-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #33ff33;
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  caret-color: transparent; /* hide native caret, we use custom cursor */
+  padding: 0;
+}
+
+/* ── Speaker Color Classes ── */
+.commander {
+  color: #ffd700;
+  font-weight: bold;
+}
+
+.system {
+  color: #ff4444;
+}
+
+.user-input {
+  color: #33ff33;
+}
+
+.enemy {
+  color: #ff44ff;
+  font-weight: bold;
+}
+
+.narrator {
+  color: #888888;
+  font-style: italic;
+}
+
+.objective {
+  color: #00ccff;
+}
+
+.success {
+  color: #44ff44;
+  font-weight: bold;
+}
+
+.error {
+  color: #ff4444;
+}
+
+.hint {
+  color: #ffaa00;
+}
+
+.ascii-art {
+  color: #00ccff;
+  line-height: 1.15;
+}
+
+.dim {
+  color: #555555;
+}
+
+.bold {
+  font-weight: bold;
+}
+
+/* ── BGM Panel ── */
+#bgm-panel {
+  position: fixed;
+  top: 12px;
+  right: 16px;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(10, 10, 10, 0.85);
+  border: 1px solid #333;
+  border-radius: 6px;
+  padding: 6px 12px;
+  user-select: none;
+  transition: opacity 0.3s;
+}
+
+#bgm-panel:hover {
+  border-color: #555;
+}
+
+#bgm-toggle {
+  background: none;
+  border: 1px solid #555;
+  border-radius: 4px;
+  color: #33ff33;
+  font-size: 16px;
+  width: 30px;
+  height: 28px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, color 0.2s;
+}
+
+#bgm-toggle:hover {
+  background: #1a1a1a;
+}
+
+#bgm-toggle.muted {
+  color: #555;
+  border-color: #333;
+}
+
+#bgm-volume {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 80px;
+  height: 4px;
+  background: #333;
+  border-radius: 2px;
+  outline: none;
+  cursor: pointer;
+}
+
+#bgm-volume::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #33ff33;
+  cursor: pointer;
+  border: none;
+}
+
+#bgm-volume::-moz-range-thumb {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #33ff33;
+  cursor: pointer;
+  border: none;
+}
+
+#bgm-vol-label {
+  color: #555;
+  font-size: 11px;
+  min-width: 30px;
+  text-align: right;
+  font-family: 'Courier New', monospace;
+}
+
+/* ── Mobile Responsive ── */
+@media (max-width: 600px) {
+  html, body {
+    font-size: 13px;
+  }
+
+  #terminal {
+    padding: 10px 12px;
+    padding-top: 48px;
+  }
+
+  #bgm-panel {
+    top: 6px;
+    right: 8px;
+    padding: 4px 8px;
+    gap: 6px;
+  }
+
+  #bgm-volume {
+    width: 60px;
+  }
+}
+
+@media (max-width: 400px) {
+  html, body {
+    font-size: 12px;
+  }
+}
