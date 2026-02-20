@@ -3,12 +3,28 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Operation: White Shield</title>
+  <title>Operation: White Shield | G-DECK</title>
   <link rel="stylesheet" href="css/terminal.css">
   <link rel="stylesheet" href="css/effects.css">
 </head>
 <body>
   <div id="crt-overlay"></div>
+  <div id="attack-overlay"></div>
+
+  <!-- HUD Overlay -->
+  <div id="hud-overlay">
+    <div id="hud-top">
+      <span class="hud-item" style="color:rgba(0,204,255,0.8)">G-DECK v3.7</span>
+      <span class="hud-item">BAT <span id="hud-bat-val">100</span>%</span>
+      <span class="hud-item"><span id="hud-stl-bar">&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;</span> STL <span id="hud-stl-val">100</span>%</span>
+      <span class="hud-item hud-good" id="hud-oracle">O.R.O.R.A: STANDBY</span>
+    </div>
+    <div id="hud-bottom">
+      <span class="hud-item" id="hud-titan">TITAN: --</span>
+      <span class="hud-item">TEMP <span id="hud-temp-val">42</span><span id="hud-temp-unit">&deg;C</span></span>
+      <span class="hud-item">MISSION <span id="hud-mis-val">--/--</span></span>
+    </div>
+  </div>
 
   <!-- BGM Controls -->
   <div id="bgm-panel">
@@ -38,6 +54,7 @@
   <script src="js/parser.js"></script>
   <script src="js/hint-system.js"></script>
   <script src="js/terminal.js"></script>
+  <script src="js/hud.js"></script>
   <script src="js/stage-manager.js"></script>
   <script src="js/bgm.js"></script>
   <script src="js/main.js"></script>

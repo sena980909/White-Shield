@@ -108,3 +108,130 @@
 .glow {
   animation: text-glow 2s ease-in-out infinite;
 }
+
+/* ── Attack Screen Shake ── */
+@keyframes screen-shake {
+  0%   { transform: translate(0); }
+  10%  { transform: translate(-4px, 2px); }
+  20%  { transform: translate(4px, -2px); }
+  30%  { transform: translate(-3px, -3px); }
+  40%  { transform: translate(3px, 3px); }
+  50%  { transform: translate(-2px, 1px); }
+  60%  { transform: translate(2px, -1px); }
+  70%  { transform: translate(-1px, 2px); }
+  80%  { transform: translate(1px, -1px); }
+  100% { transform: translate(0); }
+}
+
+.attack-shake {
+  animation: screen-shake 0.5s ease-in-out;
+}
+
+/* ── Attack Red Flash Overlay ── */
+#attack-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  pointer-events: none;
+  z-index: 45;
+  background: transparent;
+}
+
+#attack-overlay.attack-active {
+  animation: attack-red-flash 0.8s ease-out;
+}
+
+@keyframes attack-red-flash {
+  0%   { background: rgba(255, 0, 0, 0.3); }
+  15%  { background: rgba(255, 0, 0, 0.05); }
+  30%  { background: rgba(255, 0, 0, 0.2); }
+  50%  { background: rgba(255, 0, 0, 0.05); }
+  70%  { background: rgba(255, 0, 0, 0.1); }
+  100% { background: transparent; }
+}
+
+/* ── HUD Overlay ── */
+#hud-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  pointer-events: none;
+  z-index: 50;
+  opacity: 0;
+  transition: opacity 1s ease-in;
+}
+
+#hud-overlay.hud-visible {
+  opacity: 1;
+}
+
+#hud-top, #hud-bottom {
+  position: absolute;
+  left: 0; right: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px 16px;
+  font-size: 11px;
+  font-family: 'Courier New', monospace;
+  color: rgba(0, 204, 255, 0.6);
+  letter-spacing: 0.5px;
+}
+
+#hud-top {
+  top: 0;
+  background: linear-gradient(to bottom, rgba(0, 15, 30, 0.75), transparent);
+  border-bottom: 1px solid rgba(0, 204, 255, 0.1);
+}
+
+#hud-bottom {
+  bottom: 0;
+  background: linear-gradient(to top, rgba(0, 15, 30, 0.75), transparent);
+  border-top: 1px solid rgba(0, 204, 255, 0.1);
+}
+
+.hud-item {
+  white-space: nowrap;
+}
+
+.hud-good { color: #44ff44; }
+.hud-warn { color: #ffaa00; }
+.hud-critical { color: #ff4444; }
+
+.hud-pulse {
+  animation: hud-blink 1s ease-in-out infinite;
+}
+
+@keyframes hud-blink {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+/* ── HUD Danger Mode (continuous red border pulse) ── */
+#hud-overlay.hud-danger-mode {
+  animation: danger-glow 2s ease-in-out infinite;
+}
+
+@keyframes danger-glow {
+  0%, 100% { box-shadow: inset 0 0 30px rgba(255, 0, 0, 0.08); }
+  50%      { box-shadow: inset 0 0 60px rgba(255, 0, 0, 0.2); }
+}
+
+/* ── HUD corner brackets ── */
+#hud-overlay::before,
+#hud-overlay::after {
+  content: '';
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  border-color: rgba(0, 204, 255, 0.2);
+  border-style: solid;
+}
+
+#hud-overlay::before {
+  top: 28px; left: 10px;
+  border-width: 1px 0 0 1px;
+}
+
+#hud-overlay::after {
+  bottom: 28px; right: 10px;
+  border-width: 0 1px 1px 0;
+}

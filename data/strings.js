@@ -1,23 +1,24 @@
 /**
- * Shared UI strings - softer, commander-style feedback.
+ * Shared UI strings - softer, commander-style feedback via O.R.O.R.A.
  */
 var WS = window.WS || {};
 
 WS.strings = {
   help: [
-    '사용 가능한 명령어:',
+    '── G-DECK 도움말 ──',
     '  help   - 이 도움말 표시',
     '  hint   - 현재 단계의 힌트 보기',
     '  clear  - 화면 초기화',
     '  status - 현재 임무 진행 상황',
     '',
     '리눅스 명령어를 입력하여 임무를 수행하세요.',
+    'O.R.O.R.A가 실시간으로 지원합니다.',
   ],
 
-  hintPrefix: '[힌트]',
+  hintPrefix: '[O.R.O.R.A]',
   hintExhausted: '더 이상 힌트가 없습니다. 위의 힌트를 참고하세요.',
 
-  clearConfirm: '화면을 초기화했습니다.',
+  clearConfirm: '[G-DECK] 화면을 초기화했습니다.',
 
   // Rotating wrong-answer messages (commander speaks, softer tone)
   wrongGeneric: [
@@ -33,9 +34,9 @@ WS.strings = {
     '[단장] 맞는 방향이야. 세부 옵션을 좀 더 다듬어보게.',
   ],
 
-  autoHintPrefix: '[단장] 좀 막히는 모양이군. 내가 힌트를 하나 주지:',
+  autoHintPrefix: '[단장] 좀 막히는 모양이군. O.R.O.R.A에게 힌트를 요청했다:',
 
-  statusFormat: '현재 임무: {title} | 진행: {current}/{total} 단계',
+  statusFormat: '[G-DECK] 현재 임무: {title} | 진행: {current}/{total} 단계',
 
-  quitConfirm: '작전을 중단하시겠습니까? 현재 진행 상황은 저장되지 않습니다.',
+  quitConfirm: '[G-DECK] 작전을 중단하시겠습니까? 현재 진행 상황은 저장되지 않습니다.',
 };

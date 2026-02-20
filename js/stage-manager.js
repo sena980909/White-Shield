@@ -1,16 +1,17 @@
 /**
  * StageManager - Central game controller and state machine.
- * Supports {name} placeholder, rotating soft-fail messages.
+ * Supports {name} placeholder, rotating soft-fail messages, HUD integration.
  */
 var WS = window.WS || {};
 
 WS.playerName = '요원'; // default, overwritten by nickname prompt
 
 WS.StageManager = class StageManager {
-  constructor(terminal, stages, audio) {
+  constructor(terminal, stages, audio, hud) {
     this.terminal = terminal;
     this.stages = stages;
     this.audio = audio || null;
+    this.hud = hud || null;
     this.hintSystem = new WS.HintSystem();
 
     this.currentStageIndex = 0;
@@ -18,6 +19,14 @@ WS.StageManager = class StageManager {
     this.state = 'IDLE';
     this._wrongIdx = 0;
     this._partialIdx = 0;
+
+    // Count mission stages (those with commands) for HUD
+    this._missionStages = [];
+    for (var i = 0; i < stages.length; i++) {
+      if (stages[i].commands && stages[i].commands.length > 0) {
+        this._missionStages.push(stages[i].id);
+      }
+    }
   }
 
   /** Replace {name} in text */
@@ -41,9 +50,82 @@ WS.StageManager = class StageManager {
     return this._t(msg);
   }
 
+  /** Update HUD based on stage context */
+  _updateHUD(stage) {
+    if (!this.hud) return;
+    var id = stage.id;
+
+    // Update mission counter
+    var mIdx = this._missionStages.indexOf(id);
+    if (mIdx >= 0) {
+      this.hud.setMission(mIdx + 1, this._missionStages.length);
+    }
+
+    // Stage-specific HUD updates
+    switch (id) {
+      // ACT 1 - normal ops
+      case 'stage_1':
+        this.hud.setTitan('--');
+        this.hud.setStealth(95);
+        break;
+      case 'stage_3':
+        this.hud.setStealth(80);
+        break;
+      case 'stage_7':
+        this.hud.setStealth(65);
+        break;
+      case 'stage_10':
+        this.hud.setStealth(55);
+        break;
+      case 'stage_14':
+        this.hud.setStealth(70);
+        break;
+
+      // ACT 2 transition - dramatic HUD shift
+      case 'stage_act2_intro':
+        this.hud.attackAlert();
+        this.hud.setTitan('HOSTILE');
+        this.hud.dangerMode(true);
+        this.hud.setStealth(50);
+        break;
+      case 'stage_15':
+        this.hud.setTemp(42, '°C');
+        break;
+      case 'stage_16':
+        this.hud.setStealth(45);
+        break;
+      case 'stage_17':
+        this.hud.setTitan('BREACHING');
+        break;
+      case 'stage_18':
+        this.hud.setTemp(2847, '°C');
+        break;
+      case 'stage_19':
+        this.hud.setTemp(2971, '°C');
+        break;
+
+      // DDoS mission
+      case 'stage_20':
+        this.hud.setOracle('DEGRADED');
+        this.hud.attackAlert();
+        this.hud.setTemp(800, '°C');
+        break;
+
+      // Ending - all clear
+      case 'stage_ending':
+        this.hud.dangerMode(false);
+        this.hud.setOracle('ONLINE');
+        this.hud.setTitan('NEUTRALIZED');
+        this.hud.setTemp(42, '°C');
+        this.hud.setStealth(100);
+        break;
+    }
+  }
+
   async start() {
     for (var i = 0; i < this.stages.length; i++) {
       this.currentStageIndex = i;
+      this._updateHUD(this.stages[i]);
       await this.runStage(this.stages[i]);
       if (!this.stages[i].next) break;
     }
@@ -66,7 +148,7 @@ WS.StageManager = class StageManager {
       await this.terminal.typeLines(this._processLines(stage.objective));
     }
 
-    // No commands = ending stage
+    // No commands = ending/transition stage
     if (!stage.commands || stage.commands.length === 0) return;
 
     // COMMAND LOOP
@@ -87,6 +169,17 @@ WS.StageManager = class StageManager {
     if (stage.success && stage.success.length > 0) {
       if (this.audio) this.audio.success();
       await this.terminal.typeLines(this._processLines(stage.success));
+    }
+
+    // Post-success HUD updates
+    if (this.hud) {
+      if (stage.id === 'stage_19') {
+        this.hud.setTemp(800, '°C');
+        this.hud.setTitan('SECURED');
+      }
+      if (stage.id === 'stage_20') {
+        this.hud.setOracle('ONLINE');
+      }
     }
 
     this.state = 'TRANSITION';
