@@ -75,7 +75,6 @@ html, body {
 }
 
 #command-input {
-  flex: 1;
   background: transparent;
   border: none;
   outline: none;
@@ -85,6 +84,17 @@ html, body {
   line-height: inherit;
   caret-color: transparent; /* hide native caret, we use custom cursor */
   padding: 0;
+  width: 1ch;
+  min-width: 1ch;
+  max-width: calc(100% - 30px);
+}
+
+/* Invisible click target to focus input from anywhere */
+#input-line::after {
+  content: '';
+  flex: 1;
+  min-height: 1.5em;
+  cursor: text;
 }
 
 /* ── Speaker Color Classes ── */
@@ -144,7 +154,7 @@ html, body {
 /* ── BGM Panel ── */
 #bgm-panel {
   position: fixed;
-  top: 12px;
+  top: 28px;
   right: 16px;
   z-index: 100;
   display: flex;
@@ -237,7 +247,7 @@ html, body {
   }
 
   #bgm-panel {
-    top: 6px;
+    top: 24px;
     right: 8px;
     padding: 4px 8px;
     gap: 6px;

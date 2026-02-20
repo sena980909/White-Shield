@@ -22,6 +22,12 @@ WS.Terminal = class Terminal {
         self.commandInput.focus();
       }
     });
+
+    // Auto-resize input so cursor follows text
+    this.commandInput.addEventListener('input', function() {
+      var len = self.commandInput.value.length;
+      self.commandInput.style.width = Math.max(1, len + 1) + 'ch';
+    });
   }
 
   /* ── Typing Animation ── */
@@ -122,6 +128,7 @@ WS.Terminal = class Terminal {
     return new Promise(function(resolve) {
       self.inputLine.classList.remove('hidden');
       self.commandInput.value = '';
+      self.commandInput.style.width = '1ch';
       self.commandInput.focus();
       self._scrollToBottom();
 
