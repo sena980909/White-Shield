@@ -1,0 +1,171 @@
+{
+  "infosec_engineer_practical_commands": [
+    {
+      "category": "System_Security_Account",
+      "command": "cat /etc/passwd",
+      "purpose": "시스템에 등록된 전체 계정 및 쉘 할당 여부 확인",
+      "exam_point": "불필요한 계정(특히 UID 0)이 존재하는지, /bin/false나 /sbin/nologin으로 쉘이 제한되어 있는지 묻는 문제 출제"
+    },
+    {
+      "category": "System_Security_Account",
+      "command": "cat /etc/shadow",
+      "purpose": "암호화된 패스워드 및 패스워드 에이징(Aging) 정보 확인",
+      "exam_point": "두 번째 필드의 암호화 해시 알고리즘 식별($1=MD5, $6=SHA512) 및 패스워드 만료 설정 여부"
+    },
+    {
+      "category": "System_Security_Account",
+      "command": "chage -M 90 -m 7 -W 7 [username]",
+      "purpose": "사용자 패스워드 만료 정책 설정",
+      "exam_point": "최대 사용일(90일), 최소 사용일(7일), 경고일(7일)을 설정하는 옵션 묻는 단답형 대비"
+    },
+    {
+      "category": "System_Security_Account",
+      "command": "usermod -s /sbin/nologin [username]",
+      "purpose": "특정 사용자의 쉘 로그인을 원천 차단",
+      "exam_point": "퇴사자 계정이나 서비스 전용 데몬 계정의 불필요한 터미널 접근 차단 조치"
+    },
+    {
+      "category": "System_Security_File",
+      "command": "find / -user root -perm -4000 -print 2>/dev/null",
+      "purpose": "root 소유의 SUID 설정 파일 전체 탐색",
+      "exam_point": "실기 단골 문제. 침해 사고 발생 시 해커가 남겨둔 백도어 파일(권한 4000번대)을 찾는 명령어 작성"
+    },
+    {
+      "category": "System_Security_File",
+      "command": "chmod 4755 [file]",
+      "purpose": "특정 파일에 SUID 부여 (소유자 권한으로 실행)",
+      "exam_point": "rwsr-xr-x 형태로 출력될 때 숫자 권한(4755)을 유추하거나 그 반대를 묻는 문제"
+    },
+    {
+      "category": "System_Security_File",
+      "command": "chattr +i [file]",
+      "purpose": "파일에 불변(Immutable) 속성 부여",
+      "exam_point": "root 계정으로도 삭제나 수정이 불가능하게 만들어 중요 무결성을 유지하는 방법. 해제는 -i"
+    },
+    {
+      "category": "System_Security_Log",
+      "command": "last",
+      "purpose": "성공한 로그인 이력 및 시스템 재부팅 기록 확인",
+      "exam_point": "읽어들이는 로그 파일이 '/var/log/wtmp'라는 점을 연결 지어 묻는 서술형 대비"
+    },
+    {
+      "category": "System_Security_Log",
+      "command": "lastb",
+      "purpose": "실패한 로그인 시도 이력 확인 (브루트 포스 탐지)",
+      "exam_point": "읽어들이는 로그 파일이 '/var/log/btmp'라는 점을 묻는 단답형 대비"
+    },
+    {
+      "category": "Network_Security_Firewall",
+      "command": "iptables -A INPUT -s 192.168.1.100 -p tcp --dport 22 -j DROP",
+      "purpose": "특정 IP에서 들어오는 SSH 접속을 아무 응답 없이 무시(DROP)",
+      "exam_point": "iptables 룰셋 작성 문제. 체인(INPUT), 프로토콜(-p), 목적지포트(--dport), 타겟(-j) 작성법 숙지. REJECT와의 차이점 중요"
+    },
+    {
+      "category": "Network_Security_Firewall",
+      "command": "iptables -A FORWARD -p icmp -j DROP",
+      "purpose": "라우팅되는 ICMP(Ping) 패킷 차단",
+      "exam_point": "내부망과 외부망 사이에서 방화벽 역할을 할 때 FORWARD 체인을 사용하는 개념"
+    },
+    {
+      "category": "Network_Security_Traffic",
+      "command": "tcpdump -i eth0 tcp port 80 and src host 10.10.10.1",
+      "purpose": "eth0 인터페이스에서 출발지가 특정 IP인 HTTP 트래픽만 캡처",
+      "exam_point": "침해 사고 분석 시 조건에 맞는 패킷 캡처 옵션 작성. BPF(Berkeley Packet Filter) 문법 이해"
+    },
+    {
+      "category": "Network_Security_Traffic",
+      "command": "netstat -anpt",
+      "purpose": "모든 네트워크 소켓의 IP, 포트, 상태, 프로세스 ID 출력",
+      "exam_point": "LISTEN, ESTABLISHED 등 TCP 상태 전이도와 엮어서 현재 열린 백도어 포트를 찾는 시나리오"
+    },
+    {
+      "category": "Vulnerability_Scanning",
+      "command": "nmap -sS -p 1-1024 192.168.0.1",
+      "purpose": "대상 시스템의 웰노운 포트를 대상으로 TCP Half-Open(SYN) 스캔 수행",
+      "exam_point": "-sS(Stealth Scan)와 -sT(Connect Scan)의 차이점 및 로그(3-way handshake 완료 여부) 남김 유무 묻는 문제"
+    },
+    {
+      "category": "Web_Application_Security",
+      "command": "find /var/www/html -name \"*.php\" -mtime -1",
+      "purpose": "웹 루트 디렉토리 내에 최근 24시간 이내에 생성/수정된 PHP 파일 검색",
+      "exam_point": "파일 업로드 취약점을 통해 업로드된 웹셸(Webshell)의 위치를 찾는 실무적인 명령어 작성"
+    },
+    {
+      "category": "Web_Application_Security",
+      "command": "cat /var/log/httpd/access_log | awk '{print $1}' | sort | uniq -c | sort -nr | head -n 5",
+      "purpose": "웹 로그를 분석하여 가장 접속 요청이 많은 상위 5개 IP 주소 추출",
+      "exam_point": "DoS/DDoS 공격지 IP를 선별해내기 위한 파이프라인(|) 활용 서술형 문제"
+    },
+    {
+      "category": "Windows_Security_CLI",
+      "command": "net localgroup administrators [username] /add",
+      "purpose": "특정 윈도우 로컬 계정을 관리자 그룹에 추가",
+      "exam_point": "윈도우 침해 사고 시 해커가 로컬 백도어 계정을 생성하고 권한을 상승시키는 과정 이해"
+    }
+  ]
+}
+
+{
+  "infosec_engineer_practical_commands_advanced": [
+    {
+      "category": "Intrusion_Detection_Snort",
+      "command": "alert tcp any any -> 192.168.10.0/24 80 (msg:\"SQL Injection Attempt\"; content:\"' or 1=1\"; sid:1000001;)",
+      "purpose": "Snort IDS를 이용한 특정 패턴(SQL 인젝션) 탐지 룰 작성",
+      "exam_point": "실기 단골 출제. Action(alert), Protocol(tcp), Source/Dest, 옵션(msg, content, sid)의 정확한 문법 구조 암기가 필수. 가시가 요원이 MSA API 게이트웨이 앞단에 IDS 룰을 긴급 배포하는 스토리 씬에 활용하기 좋음."
+    },
+    {
+      "category": "System_Auditing_Auditd",
+      "command": "auditctl -w /etc/shadow -p wa -k shadow_monitor",
+      "purpose": "auditd를 활용하여 암호 파일(/etc/shadow)의 쓰기(w) 및 속성 변경(a) 이벤트 감시",
+      "exam_point": "파일 무결성 모니터링 문제. 특정 파일의 수정 내역을 추적하기 위해 감시 규칙(-w)과 권한 옵션(-p)을 설정하는 작업형 대비. 공정 제어(CGL) 서버나 MES 시스템의 핵심 설정 파일 변조를 잡아내는 기믹으로 적합."
+    },
+    {
+      "category": "Web_Server_Security_Apache",
+      "command": "sed -i 's/ServerTokens OS/ServerTokens Prod/g' /etc/httpd/conf/httpd.conf",
+      "purpose": "웹 서버의 HTTP 응답 헤더에서 운영체제 및 웹 서버 버전 정보 노출 숨김",
+      "exam_point": "정보 수집(Footprinting) 단계의 방어 기법. ServerTokens Prod 및 ServerSignature Off 설정은 실무 취약점 진단 조치의 기본이자 실기 빈출 문제."
+    },
+    {
+      "category": "Web_Server_Security_Apache",
+      "command": "sed -i 's/Options Indexes/Options -Indexes/g' /etc/httpd/conf/httpd.conf",
+      "purpose": "디렉토리 리스팅(Directory Listing) 취약점 제거를 위해 Indexes 옵션 비활성화",
+      "exam_point": "웹 브라우저에서 인덱스 파일이 없을 때 디렉토리 내의 파일 목록이 훤히 보이는 취약점을 조치하는 명령어 작성."
+    },
+    {
+      "category": "Network_Security_DNS",
+      "command": "dig @[DNS_IP] [domain] axfr",
+      "purpose": "DNS Zone Transfer(존 전송) 취약점 확인을 위한 모든 레코드 질의",
+      "exam_point": "DNS 서버의 설정 오류로 인해 도메인 내의 모든 호스트 정보가 통째로 유출되는지 진단. BIND 설정(named.conf)에서 'allow-transfer { none; };' 조치와 엮어서 출제됨."
+    },
+    {
+      "category": "System_Hardening_SSH",
+      "command": "sed -i 's/#PermitRootLogin yes/PermitRootLogin no/g' /etc/ssh/sshd_config",
+      "purpose": "root 계정의 SSH 원격 접속 원천 차단",
+      "exam_point": "최고 관리자 권한 탈취 방지. 반드시 일반 계정으로 접속 후 su/sudo를 통해 권한을 상승하도록 강제하는 실무 보안 컴플라이언스 1순위 항목."
+    },
+    {
+      "category": "System_Hardening_Cron",
+      "command": "echo \"ALL\" > /etc/cron.deny && echo \"root\" > /etc/cron.allow",
+      "purpose": "일반 사용자의 crontab(예약 작업) 사용을 제한하고 root만 허용",
+      "exam_point": "해커가 백도어를 주기적으로 실행하기 위해 크론잡을 등록하는 것을 막는 접근 제어 기법. allow 파일이 deny 파일보다 우선순위가 높다는 개념을 묻는 서술형 대비."
+    },
+    {
+      "category": "Privilege_Escalation_Defense",
+      "command": "chmod -s /usr/bin/make",
+      "purpose": "불필요한 실행 파일에 부여된 SUID(Set User ID) 제거",
+      "exam_point": "make, awk, find 등의 유틸리티에 SUID가 부여되어 있을 경우, 일반 사용자가 이를 악용해 root 쉘을 획득하는 권한 상승(Privilege Escalation) 우회 공격을 막는 조치."
+    },
+    {
+      "category": "Anti_Spoofing_Network",
+      "command": "echo 1 > /proc/sys/net/ipv4/conf/all/rp_filter",
+      "purpose": "IP 스푸핑(Spoofing) 방지를 위한 역경로 필터링(Reverse Path Filtering) 활성화",
+      "exam_point": "출발지 IP가 조작된 패킷이 들어왔을 때, 라우팅 테이블을 확인하여 들어온 인터페이스와 나가는 인터페이스가 다르면 패킷을 드롭하는 커널 파라미터 설정."
+    },
+    {
+      "category": "Application_Security_Nginx",
+      "command": "grep -i 'limit_req_zone' /etc/nginx/nginx.conf",
+      "purpose": "Nginx에서 특정 IP의 초당 요청 수(Rate Limiting)를 제한하는 설정 확인",
+      "exam_point": "애플리케이션 계층(L7)의 HTTP GET Flooding 등 DoS 공격을 완화하기 위한 Nginx 환경 설정 문제."
+    }
+  ]
+}
