@@ -40,6 +40,8 @@ WS.strings = {
 
   typoSuggestion: '[G-DECK] 혹시 \'{cmd}\' 명령어를 입력하려고 했나요?',
 
+  windowsHint: '[G-DECK] 이것은 Windows 명령어입니다. 리눅스에서는 {linux}을(를) 사용합니다. ({desc})',
+
   dangerousPrefix: '[O.R.O.R.A] ██ 위험 명령 감지 ██',
   dangerousWarning: '[O.R.O.R.A] {msg}',
   dangerousSuffix: '[O.R.O.R.A] 실전에서 이 명령은 절대 실행하지 마세요. 임무에 집중하십시오, {name}.',

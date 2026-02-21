@@ -213,6 +213,17 @@ WS.StageManager = class StageManager {
         continue;
       }
 
+      // Windows command guide for beginners
+      var windowsHint = WS.checkWindows(input);
+      if (windowsHint) {
+        var winMsg = strings.windowsHint
+          .replace('{linux}', windowsHint.linux)
+          .replace('{desc}', windowsHint.desc);
+        await this.terminal.typeLine(winMsg, 'hint', 20);
+        this.terminal.printBlank();
+        continue;
+      }
+
       // Typo suggestion (before wrong-answer feedback)
       var typoSuggestion = WS.checkTypo(input);
       if (typoSuggestion) {

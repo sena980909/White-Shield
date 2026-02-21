@@ -191,6 +191,42 @@ WS.checkDangerous = function(rawInput) {
   return null;
 };
 
+/* ── Windows/Beginner Command Guide ── */
+
+/** Map of Windows commands to their Linux equivalents */
+var WINDOWS_COMMANDS = {
+  'ipconfig': { linux: 'ip addr 또는 ifconfig', desc: '네트워크 설정 확인' },
+  'dir': { linux: 'ls', desc: '디렉토리 목록 확인' },
+  'cls': { linux: 'clear', desc: '화면 초기화' },
+  'del': { linux: 'rm', desc: '파일 삭제' },
+  'copy': { linux: 'cp', desc: '파일 복사' },
+  'move': { linux: 'mv', desc: '파일 이동/이름 변경' },
+  'ren': { linux: 'mv', desc: '파일 이름 변경' },
+  'rename': { linux: 'mv', desc: '파일 이름 변경' },
+  'type': { linux: 'cat', desc: '파일 내용 보기' },
+  'tasklist': { linux: 'ps', desc: '프로세스 목록 확인' },
+  'taskkill': { linux: 'kill', desc: '프로세스 종료' },
+  'netsh': { linux: 'iptables', desc: '방화벽/네트워크 설정' },
+  'tracert': { linux: 'traceroute', desc: '네트워크 경로 추적' },
+  'systeminfo': { linux: 'uname -a', desc: '시스템 정보 확인' },
+  'findstr': { linux: 'grep', desc: '텍스트 검색' },
+  'icacls': { linux: 'chmod', desc: '파일 권한 변경' },
+  'chkdsk': { linux: 'fsck', desc: '디스크 검사' },
+};
+
+/**
+ * Check if the input starts with a Windows command.
+ * Returns { linux, desc } or null.
+ */
+WS.checkWindows = function(rawInput) {
+  var normalized = WS.normalize(rawInput);
+  var firstWord = normalized.split(/\s+/)[0];
+  if (firstWord && WINDOWS_COMMANDS[firstWord]) {
+    return WINDOWS_COMMANDS[firstWord];
+  }
+  return null;
+};
+
 /** Meta commands recognized globally */
 var META_COMMANDS = ['help', 'hint', 'clear', 'status', 'quit'];
 
