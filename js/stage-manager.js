@@ -82,37 +82,37 @@ WS.StageManager = class StageManager {
       // ACT 1 - normal ops
       case 'stage_1':
         this.hud.setTitan('--');
-        this.hud.setStealth(95);
+        this.hud.setStealth(97);
         break;
       case 'stage_3':
-        this.hud.setStealth(80);
+        this.hud.setStealth(90);
         break;
       case 'stage_7':
-        this.hud.setStealth(65);
+        this.hud.setStealth(82);
         break;
       case 'stage_10':
-        this.hud.setStealth(55);
+        this.hud.setStealth(77);
         break;
       case 'stage_14':
-        this.hud.setStealth(70);
+        this.hud.setStealth(85);
         break;
 
       // Data breach episode
       case 'stage_db1':
-        this.hud.setStealth(50);
+        this.hud.setStealth(75);
         this.hud.attackAlert();
         break;
       case 'stage_db2':
-        this.hud.setStealth(45);
+        this.hud.setStealth(72);
         break;
       case 'stage_db3':
-        this.hud.setStealth(40);
+        this.hud.setStealth(70);
         break;
       case 'stage_db4':
-        this.hud.setStealth(55);
+        this.hud.setStealth(77);
         break;
       case 'stage_db5':
-        this.hud.setStealth(65);
+        this.hud.setStealth(82);
         break;
 
       // ACT 2 transition - dramatic HUD shift
@@ -120,13 +120,13 @@ WS.StageManager = class StageManager {
         this.hud.attackAlert();
         this.hud.setTitan('HOSTILE');
         this.hud.dangerMode(true);
-        this.hud.setStealth(50);
+        this.hud.setStealth(75);
         break;
       case 'stage_15':
         this.hud.setTemp(42, '°C');
         break;
       case 'stage_16':
-        this.hud.setStealth(45);
+        this.hud.setStealth(72);
         break;
       case 'stage_17':
         this.hud.setTitan('BREACHING');
