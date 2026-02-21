@@ -206,6 +206,9 @@ WS.StageManager = class StageManager {
     // No commands = ending/transition stage
     if (!stage.commands || stage.commands.length === 0) return;
 
+    // Hint reminder for beginners
+    this.terminal.printLine('막히면 hint를 입력하세요.', 'dim');
+
     // COMMAND LOOP
     for (var cmdIdx = 0; cmdIdx < stage.commands.length; cmdIdx++) {
       this.currentCommandIndex = cmdIdx;
