@@ -46,7 +46,7 @@ WS.stages = [
     ],
     objective: [
       { text: '┌─ 훈련 목표 ────────────────────────────────────', 'class': 'objective' },
-      { text: '│ 현재 작업 디렉토리를 확인하라 (pwd, whoami, id)', 'class': 'objective' },
+      { text: '│ 현재 작업 디렉토리를 확인하라 (pwd, whoami, id)│', 'class': 'objective' },
       { text: '└────────────────────────────────────────────────', 'class': 'objective' },
       { text: '', 'class': '' },
     ],
@@ -210,7 +210,7 @@ WS.stages = [
     ],
     objective: [
       { text: '┌─ 훈련 목표 ──────────────────────────────────', 'class': 'objective' },
-      { text: '│ PID 7777 프로세스를 강제 종료하라 (kill -9 7777)', 'class': 'objective' },
+      { text: '│ PID 7777 프로세스를 강제 종료하라 (kill -9 7777)│', 'class': 'objective' },
       { text: '└──────────────────────────────────────────────', 'class': 'objective' },
       { text: '', 'class': '' },
     ],
@@ -264,7 +264,7 @@ WS.stages = [
     ],
     objective: [
       { text: '┌─ 훈련 목표 ──────────────────────────────────────', 'class': 'objective' },
-      { text: '│ 열려있는 네트워크 포트를 확인하라 (netstat -tuln)', 'class': 'objective' },
+      { text: '│ 열려있는 네트워크 포트를 확인하라 (netstat -tuln)│', 'class': 'objective' },
       { text: '└──────────────────────────────────────────────────', 'class': 'objective' },
       { text: '', 'class': '' },
     ],
@@ -420,8 +420,8 @@ WS.stages = [
     ],
     objective: [
       { text: '┌─ 임무 목표 ─────────────────────────────────', 'class': 'objective' },
-      { text: '│ 1단계: 열린 포트와 리스닝 프로세스를 확인하라', 'class': 'objective' },
-      { text: '│ 2단계: 의심 포트를 사용하는 프로세스를 추적하라', 'class': 'objective' },
+      { text: '│ 1단계: 열린 포트와 리스닝 프로세스를 확인하라│', 'class': 'objective' },
+      { text: '│ 2단계: 의심 포트를 사용하는 프로세스를 추적하라│', 'class': 'objective' },
       { text: '└──────────────────────────────────────────────', 'class': 'objective' },
       { text: '', 'class': '' },
     ],
@@ -592,7 +592,7 @@ WS.stages = [
     ],
     objective: [
       { text: '┌─ 임무 목표 ───────────────────────────', 'class': 'objective' },
-      { text: '│ 리버스 셸 프로세스(PID 8752)를 종료하라', 'class': 'objective' },
+      { text: '│ 리버스 셸 프로세스(PID 8752)를 종료하라│', 'class': 'objective' },
       { text: '└────────────────────────────────────────', 'class': 'objective' },
       { text: '', 'class': '' },
     ],
@@ -845,8 +845,8 @@ WS.stages = [
     ],
     objective: [
       { text: '┌─ 임무 목표 ──────────────────────────────', 'class': 'objective' },
-      { text: '│ 1단계: 시스템 사용자 계정 목록을 확인하라', 'class': 'objective' },
-      { text: '│ 2단계: SUID 권한이 설정된 파일을 검색하라', 'class': 'objective' },
+      { text: '│ 1단계: 시스템 사용자 계정 목록을 확인하라│', 'class': 'objective' },
+      { text: '│ 2단계: SUID 권한이 설정된 파일을 검색하라│', 'class': 'objective' },
       { text: '│ 3단계: 악성 SUID 백도어 파일을 삭제하라', 'class': 'objective' },
       { text: '└───────────────────────────────────────────', 'class': 'objective' },
       { text: '', 'class': '' },
@@ -983,7 +983,7 @@ WS.stages = [
     ],
     objective: [
       { text: '┌─ 임무 목표 ───────────────────────────────────', 'class': 'objective' },
-      { text: '│ 1단계: 웹 디렉토리에서 최근 수정 파일을 검색하라', 'class': 'objective' },
+      { text: '│ 1단계: 웹 디렉토리에서 최근 수정 파일을 검색하라│', 'class': 'objective' },
       { text: '│ 2단계: 발견된 웹셸을 삭제하라', 'class': 'objective' },
       { text: '└────────────────────────────────────────────────', 'class': 'objective' },
       { text: '', 'class': '' },
@@ -1153,7 +1153,7 @@ WS.stages = [
     ],
     objective: [
       { text: '┌─ 임무 목표 ───────────────────────────────', 'class': 'objective' },
-      { text: '│ 위장 RAT 프로세스(PID 10933)를 강제 종료하라', 'class': 'objective' },
+      { text: '│ 위장 RAT 프로세스(PID 10933)를 강제 종료하라│', 'class': 'objective' },
       { text: '└────────────────────────────────────────────', 'class': 'objective' },
       { text: '', 'class': '' },
     ],
@@ -1219,7 +1219,7 @@ WS.stages = [
     ],
     objective: [
       { text: '┌─ 임무 목표 ────────────────────────────────────────', 'class': 'objective' },
-      { text: '│ /var/data 에서 최근 10분 내 생성/수정된 파일을 찾아라', 'class': 'objective' },
+      { text: '│ /var/data 에서 최근 10분 내 생성/수정된 파일을 찾아라│', 'class': 'objective' },
       { text: '└─────────────────────────────────────────────────────', 'class': 'objective' },
       { text: '', 'class': '' },
     ],
@@ -1561,7 +1561,7 @@ WS.stages = [
     ],
     objective: [
       { text: '┌─ 임무 목표 ──────────────────────────────────────', 'class': 'objective' },
-      { text: '│ 1단계: 바이너리에서 해커 그룹 시그니처를 검색하라', 'class': 'objective' },
+      { text: '│ 1단계: 바이너리에서 해커 그룹 시그니처를 검색하라│', 'class': 'objective' },
       { text: '│ 2단계: 발견된 Base64 암호문을 해독하라', 'class': 'objective' },
       { text: '└───────────────────────────────────────────────────', 'class': 'objective' },
       { text: '', 'class': '' },
@@ -1759,8 +1759,8 @@ WS.stages = [
     ],
     objective: [
       { text: '┌─ 임무 목표 ──────────────────────────────────', 'class': 'objective' },
-      { text: '│ 1단계: shadow 파일에서 패스워드 해시를 확인하라', 'class': 'objective' },
-      { text: '│ 2단계: root 계정의 패스워드 만료 정책을 설정하라', 'class': 'objective' },
+      { text: '│ 1단계: shadow 파일에서 패스워드 해시를 확인하라│', 'class': 'objective' },
+      { text: '│ 2단계: root 계정의 패스워드 만료 정책을 설정하라│', 'class': 'objective' },
       { text: '└───────────────────────────────────────────────', 'class': 'objective' },
       { text: '', 'class': '' },
     ],
@@ -1935,7 +1935,7 @@ WS.stages = [
     objective: [
       { text: '┌─ 임무 목표 ────────────────────────────────────────', 'class': 'objective' },
       { text: '│ 1단계: /etc/passwd에 불변 속성을 부여하라 (chattr)', 'class': 'objective' },
-      { text: '│ 2단계: /etc/shadow 파일 변조 감시를 설정하라 (auditctl)│', 'class': 'objective' },
+      { text: '│ 2단계: /etc/shadow 파일 변조 감시를 설정하라 (auditctl)││', 'class': 'objective' },
       { text: '└─────────────────────────────────────────────────────', 'class': 'objective' },
       { text: '', 'class': '' },
     ],
@@ -2104,7 +2104,7 @@ WS.stages = [
     ],
     objective: [
       { text: '┌─ 임무 목표 ──────────────────────────────────────────', 'class': 'objective' },
-      { text: '│ OT 네트워크(eth1)에서 Modbus 트래픽(port 502)을 캡처하라', 'class': 'objective' },
+      { text: '│ OT 네트워크(eth1)에서 Modbus 트래픽(port 502)을 캡처하라│', 'class': 'objective' },
       { text: '│ 저장 파일: robot_control.pcap', 'class': 'objective' },
       { text: '└───────────────────────────────────────────────────────', 'class': 'objective' },
       { text: '', 'class': '' },
@@ -2439,8 +2439,8 @@ WS.stages = [
     ],
     objective: [
       { text: '┌─ 임무 목표 ──────────────────────────────────────────', 'class': 'objective' },
-      { text: '│ 1단계: 냉각 밸브 잠금 프로세스(coolant_valve) PID 확인', 'class': 'objective' },
-      { text: '│ 2단계: 해당 프로세스를 강제 종료하여 냉각 시스템 복구', 'class': 'objective' },
+      { text: '│ 1단계: 냉각 밸브 잠금 프로세스(coolant_valve) PID 확인│', 'class': 'objective' },
+      { text: '│ 2단계: 해당 프로세스를 강제 종료하여 냉각 시스템 복구│', 'class': 'objective' },
       { text: '└───────────────────────────────────────────────────────', 'class': 'objective' },
       { text: '', 'class': '' },
     ],
