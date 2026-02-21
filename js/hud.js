@@ -113,8 +113,8 @@ WS.HUD = class HUD {
   _startDrain() {
     var self = this;
     this._drainTimer = setInterval(function() {
-      if (self._battery > 15) self.setBattery(self._battery - 1);
-    }, 45000);
+      if (self._battery > 5) self.setBattery(self._battery - 1);
+    }, 450000);
   }
 
   /** HUD flicker for unstable connection */
