@@ -104,13 +104,32 @@ document.addEventListener('DOMContentLoaded', async function() {
   await terminal.typeLine('콜사인(닉네임)을 입력하세요:', 'objective', 25);
 
   var nickname = '';
-  while (!nickname.trim()) {
-    nickname = await terminal.waitForInput();
-    if (!nickname.trim()) {
-      await terminal.typeLine('[G-DECK] 콜사인을 입력해야 합니다.', 'system', 20);
+  var confirmed = false;
+  while (!confirmed) {
+    nickname = '';
+    while (!nickname.trim()) {
+      nickname = await terminal.waitForInput();
+      if (!nickname.trim()) {
+        await terminal.typeLine('[G-DECK] 콜사인을 입력해야 합니다.', 'system', 20);
+      }
+    }
+    nickname = nickname.trim();
+
+    await terminal.typeLine('[G-DECK] 콜사인: "' + nickname + '" — 이 콜사인으로 진행할까요? (Y/N)', 'system', 20);
+    var confirm = '';
+    while (confirm !== 'y' && confirm !== 'n') {
+      confirm = (await terminal.waitForInput()).trim().toLowerCase();
+      if (confirm !== 'y' && confirm !== 'n') {
+        await terminal.typeLine('[G-DECK] Y 또는 N을 입력하세요.', 'system', 20);
+      }
+    }
+    if (confirm === 'y') {
+      confirmed = true;
+    } else {
+      await terminal.typeLine('[G-DECK] 콜사인을 다시 입력하세요.', 'system', 20);
     }
   }
-  WS.playerName = nickname.trim();
+  WS.playerName = nickname;
 
   terminal.printBlank();
   await terminal.typeLine('[O.R.O.R.A] 요원 "' + WS.playerName + '" 신원 확인 완료.', 'system', 20);

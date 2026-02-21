@@ -17,10 +17,19 @@ WS.Terminal = class Terminal {
     this._fastSpeed = 10;
 
     var self = this;
+    this._audioActivated = false;
+
+    // Focus input on container click + activate audio
     this.container.addEventListener('click', function() {
+      self._activateAudio();
       if (!self.inputLine.classList.contains('hidden')) {
         self.commandInput.focus();
       }
+    });
+
+    // Activate audio on first keypress in input
+    this.commandInput.addEventListener('keydown', function() {
+      self._activateAudio();
     });
 
     // Auto-resize input (Korean/CJK = 2ch width, ASCII = 1ch)
@@ -171,6 +180,18 @@ WS.Terminal = class Terminal {
   }
 
   /* ── Private Helpers ── */
+
+  /** Activate audio + BGM on first user gesture */
+  _activateAudio() {
+    if (this._audioActivated) return;
+    this._audioActivated = true;
+    if (this.audio) this.audio._ensureResumed();
+    // Also trigger BGM if available
+    var bgmAudio = document.getElementById('bgm-audio');
+    if (bgmAudio && bgmAudio.paused) {
+      bgmAudio.play().catch(function() {});
+    }
+  }
 
   _scrollToBottom() {
     var self = this;
