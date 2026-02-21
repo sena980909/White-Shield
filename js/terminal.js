@@ -16,6 +16,28 @@ WS.Terminal = class Terminal {
     this._defaultSpeed = 30; // ms per character
     this._fastSpeed = 10;
 
+    // Command history
+    this._history = [];
+    this._historyIndex = -1;
+    this._historyMax = 50;
+    this._savedInput = '';
+
+    // Tab autocomplete - common Linux commands used in the game
+    this._knownCommands = [
+      'pwd', 'ls', 'cd', 'cat', 'grep', 'find', 'df', 'du',
+      'ps', 'top', 'kill', 'netstat', 'lsof', 'ss',
+      'iptables', 'ufw', 'firewall-cmd',
+      'chmod', 'chown', 'passwd', 'crontab',
+      'tar', 'gzip', 'systemctl', 'journalctl',
+      'tail', 'head', 'less', 'more', 'wc',
+      'cp', 'mv', 'rm', 'mkdir', 'touch',
+      'ssh', 'scp', 'curl', 'wget',
+      'apt', 'yum', 'dnf',
+      'hint', 'help', 'clear', 'status',
+      'modbus_read', 'modbus_write', 'plc_diag',
+      'tcpdump', 'snort', 'fail2ban-client',
+    ];
+
     var self = this;
     this._audioActivated = false;
 
@@ -34,13 +56,42 @@ WS.Terminal = class Terminal {
 
     // Auto-resize input (Korean/CJK = 2ch width, ASCII = 1ch)
     this.commandInput.addEventListener('input', function() {
-      var val = self.commandInput.value;
-      var w = 0;
-      for (var i = 0; i < val.length; i++) {
-        w += val.charCodeAt(i) > 127 ? 2 : 1;
-      }
-      self.commandInput.style.width = Math.max(1, w + 1) + 'ch';
+      self._resizeInput();
     });
+  }
+
+  /** Resize input field to match content width */
+  _resizeInput() {
+    var val = this.commandInput.value;
+    var w = 0;
+    for (var i = 0; i < val.length; i++) {
+      w += val.charCodeAt(i) > 127 ? 2 : 1;
+    }
+    this.commandInput.style.width = Math.max(1, w + 1) + 'ch';
+  }
+
+  /** Add a command to history */
+  _pushHistory(cmd) {
+    if (!cmd || !cmd.trim()) return;
+    // Avoid duplicating the last entry
+    if (this._history.length > 0 && this._history[this._history.length - 1] === cmd) return;
+    this._history.push(cmd);
+    if (this._history.length > this._historyMax) this._history.shift();
+  }
+
+  /** Tab autocomplete: find matching commands for current input */
+  _tabComplete(input) {
+    if (!input) return null;
+    var lower = input.toLowerCase();
+    var matches = [];
+    for (var i = 0; i < this._knownCommands.length; i++) {
+      if (this._knownCommands[i].indexOf(lower) === 0) {
+        matches.push(this._knownCommands[i]);
+      }
+    }
+    if (matches.length === 1) return matches[0];
+    if (matches.length > 1) return matches;
+    return null;
   }
 
   /* ── Typing Animation ── */
@@ -144,22 +195,79 @@ WS.Terminal = class Terminal {
       self.commandInput.style.width = '1ch';
       self.commandInput.focus();
       self._scrollToBottom();
+      self._historyIndex = self._history.length;
+      self._savedInput = '';
 
       function onKeyDown(e) {
+        // Enter - submit command
         if (e.key === 'Enter') {
           e.preventDefault();
-          // Ensure audio context is resumed on user gesture
           if (self.audio) self.audio._ensureResumed();
 
           var value = self.commandInput.value;
+          self._pushHistory(value);
           self.commandInput.removeEventListener('keydown', onKeyDown);
           self.inputLine.classList.add('hidden');
 
-          // echo the command to output
           self.printLine('$ ' + value, 'user-input');
           self.printBlank();
-
           resolve(value);
+          return;
+        }
+
+        // ArrowUp - previous command
+        if (e.key === 'ArrowUp') {
+          e.preventDefault();
+          if (self._history.length === 0) return;
+          if (self._historyIndex === self._history.length) {
+            self._savedInput = self.commandInput.value;
+          }
+          if (self._historyIndex > 0) {
+            self._historyIndex--;
+            self.commandInput.value = self._history[self._historyIndex];
+            self._resizeInput();
+          }
+          return;
+        }
+
+        // ArrowDown - next command
+        if (e.key === 'ArrowDown') {
+          e.preventDefault();
+          if (self._historyIndex < self._history.length) {
+            self._historyIndex++;
+            if (self._historyIndex === self._history.length) {
+              self.commandInput.value = self._savedInput;
+            } else {
+              self.commandInput.value = self._history[self._historyIndex];
+            }
+            self._resizeInput();
+          }
+          return;
+        }
+
+        // Tab - autocomplete
+        if (e.key === 'Tab') {
+          e.preventDefault();
+          var current = self.commandInput.value;
+          // Only complete the first word (command name)
+          var parts = current.split(' ');
+          var prefix = parts[0];
+          if (parts.length > 1 || !prefix) return;
+
+          var result = self._tabComplete(prefix);
+          if (typeof result === 'string') {
+            // Single match - fill it in
+            self.commandInput.value = result;
+            self._resizeInput();
+            if (self.audio) self.audio.tick();
+          } else if (Array.isArray(result)) {
+            // Multiple matches - show options
+            self.printLine('$ ' + current, 'dim');
+            self.printLine(result.join('  '), 'dim');
+            self._scrollToBottom();
+            if (self.audio) self.audio.tick();
+          }
+          return;
         }
       }
 

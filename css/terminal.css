@@ -87,6 +87,7 @@ html, body {
   font-size: inherit;
   line-height: inherit;
   caret-color: #33ff33;
+  text-shadow: 0 0 4px rgba(51, 255, 51, 0.3);
   padding: 0;
   width: 1ch;
   min-width: 1ch;
@@ -101,7 +102,7 @@ html, body {
   cursor: text;
 }
 
-/* ── Enter Key Hint ── */
+/* ── Key Hints ── */
 #enter-hint {
   color: #555;
   font-size: 11px;
@@ -109,6 +110,7 @@ html, body {
   user-select: none;
   flex-shrink: 0;
 }
+
 
 /* ── Input Focus Indicator ── */
 #input-line:not(.hidden) {
@@ -129,6 +131,7 @@ html, body {
 
 .user-input {
   color: #33ff33;
+  text-shadow: 0 0 3px rgba(51, 255, 51, 0.25);
 }
 
 .enemy {

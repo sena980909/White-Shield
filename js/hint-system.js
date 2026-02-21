@@ -17,6 +17,11 @@ WS.HintSystem = class HintSystem {
     return this.wrongCount >= this.autoHintThreshold;
   }
 
+  /** Normalize hint: supports both { text: '...' } objects and plain strings */
+  _hintText(raw) {
+    return (typeof raw === 'object' && raw !== null && raw.text) ? raw.text : raw;
+  }
+
   /**
    * Get the next hint from the hints array.
    * Returns { text, remaining } or null if no hints left.
@@ -28,12 +33,12 @@ WS.HintSystem = class HintSystem {
 
     if (this.hintIndex >= hints.length) {
       return {
-        text: hints[hints.length - 1],
+        text: this._hintText(hints[hints.length - 1]),
         remaining: 0,
       };
     }
 
-    var text = hints[this.hintIndex];
+    var text = this._hintText(hints[this.hintIndex]);
     this.hintIndex++;
 
     return {
