@@ -23,10 +23,14 @@ WS.Terminal = class Terminal {
       }
     });
 
-    // Auto-resize input so cursor follows text
+    // Auto-resize input (Korean/CJK = 2ch width, ASCII = 1ch)
     this.commandInput.addEventListener('input', function() {
-      var len = self.commandInput.value.length;
-      self.commandInput.style.width = Math.max(1, len + 1) + 'ch';
+      var val = self.commandInput.value;
+      var w = 0;
+      for (var i = 0; i < val.length; i++) {
+        w += val.charCodeAt(i) > 127 ? 2 : 1;
+      }
+      self.commandInput.style.width = Math.max(1, w + 1) + 'ch';
     });
   }
 
@@ -135,6 +139,9 @@ WS.Terminal = class Terminal {
       function onKeyDown(e) {
         if (e.key === 'Enter') {
           e.preventDefault();
+          // Ensure audio context is resumed on user gesture
+          if (self.audio) self.audio._ensureResumed();
+
           var value = self.commandInput.value;
           self.commandInput.removeEventListener('keydown', onKeyDown);
           self.inputLine.classList.add('hidden');
