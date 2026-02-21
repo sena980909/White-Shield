@@ -7,14 +7,9 @@
   }
 }
 
-/* ── Cursor Blink ── */
+/* ── Cursor Blink (hidden — using native caret instead) ── */
 .cursor {
-  display: inline-block;
-  width: 8px;
-  height: 1.2em;
-  background: #33ff33;
-  vertical-align: text-bottom;
-  animation: cursor-blink 1s step-end infinite;
+  display: none;
 }
 
 @keyframes cursor-blink {
