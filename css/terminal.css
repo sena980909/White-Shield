@@ -75,6 +75,7 @@ html, body {
 #prompt {
   flex-shrink: 0;
   user-select: none;
+  margin-right: 6px;
 }
 
 #command-input {
