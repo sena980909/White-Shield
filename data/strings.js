@@ -40,5 +40,9 @@ WS.strings = {
 
   typoSuggestion: '[G-DECK] 혹시 \'{cmd}\' 명령어를 입력하려고 했나요?',
 
+  dangerousPrefix: '[O.R.O.R.A] ██ 위험 명령 감지 ██',
+  dangerousWarning: '[O.R.O.R.A] {msg}',
+  dangerousSuffix: '[O.R.O.R.A] 실전에서 이 명령은 절대 실행하지 마세요. 임무에 집중하십시오, {name}.',
+
   quitConfirm: '[G-DECK] 작전을 중단하시겠습니까? 현재 진행 상황은 저장되지 않습니다.',
 };

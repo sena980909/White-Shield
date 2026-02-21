@@ -200,6 +200,19 @@ WS.StageManager = class StageManager {
       var result = WS.matchCommand(input, commandDef);
       if (result.matched) return;
 
+      // Dangerous command warning (skip normal wrong-answer flow)
+      var dangerousMsg = WS.checkDangerous(input);
+      if (dangerousMsg) {
+        if (this.audio) this.audio.alert();
+        await this.terminal.typeLine(strings.dangerousPrefix, 'error', 15);
+        await this.terminal.typeLine(
+          strings.dangerousWarning.replace('{msg}', dangerousMsg), 'error', 20
+        );
+        await this.terminal.typeLine(this._t(strings.dangerousSuffix), 'error', 20);
+        this.terminal.printBlank();
+        continue;
+      }
+
       // Typo suggestion (before wrong-answer feedback)
       var typoSuggestion = WS.checkTypo(input);
       if (typoSuggestion) {
