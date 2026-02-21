@@ -45,7 +45,7 @@ WS.stages = [
       { text: '', 'class': '' },
     ],
     objective: [
-      { text: '─── 훈련 목표 ───', 'class': 'objective' },
+      { text: '──────────────── 훈련 목표 ────────────────', 'class': 'objective' },
       { text: '현재 작업 디렉토리를 확인하라 (pwd, whoami, id)', 'class': 'objective' },
       { text: '────────────────────────────────────', 'class': 'objective' },
       { text: '', 'class': '' },
@@ -97,7 +97,7 @@ WS.stages = [
       { text: '', 'class': '' },
     ],
     objective: [
-      { text: '─── 훈련 목표 ───', 'class': 'objective' },
+      { text: '──────────────── 훈련 목표 ────────────────', 'class': 'objective' },
       { text: '디스크 사용량을 확인하라 (df -h)', 'class': 'objective' },
       { text: '────────────────────────────────────', 'class': 'objective' },
       { text: '', 'class': '' },
@@ -153,7 +153,7 @@ WS.stages = [
       { text: '', 'class': '' },
     ],
     objective: [
-      { text: '─── 훈련 목표 ───', 'class': 'objective' },
+      { text: '──────────────── 훈련 목표 ────────────────', 'class': 'objective' },
       { text: '실행 중인 프로세스 목록을 확인하라 (ps -ef)', 'class': 'objective' },
       { text: '────────────────────────────────────', 'class': 'objective' },
       { text: '', 'class': '' },
@@ -209,7 +209,7 @@ WS.stages = [
       { text: '', 'class': '' },
     ],
     objective: [
-      { text: '─── 훈련 목표 ───', 'class': 'objective' },
+      { text: '──────────────── 훈련 목표 ────────────────', 'class': 'objective' },
       { text: 'PID 7777 프로세스를 강제 종료하라 (kill -9 7777)', 'class': 'objective' },
       { text: '────────────────────────────────────', 'class': 'objective' },
       { text: '', 'class': '' },
@@ -263,7 +263,7 @@ WS.stages = [
       { text: '', 'class': '' },
     ],
     objective: [
-      { text: '─── 훈련 목표 ───', 'class': 'objective' },
+      { text: '──────────────── 훈련 목표 ────────────────', 'class': 'objective' },
       { text: '열려있는 네트워크 포트를 확인하라 (netstat -tuln)', 'class': 'objective' },
       { text: '────────────────────────────────────', 'class': 'objective' },
       { text: '', 'class': '' },
@@ -340,7 +340,7 @@ WS.stages = [
       { text: '', 'class': '' },
     ],
     objective: [
-      { text: '─── 임무 목표 ───', 'class': 'objective' },
+      { text: '──────────────── 임무 목표 ────────────────', 'class': 'objective' },
       { text: '인증 로그에서 실패한 로그인 기록을 필터링하라', 'class': 'objective' },
       { text: '파일: /var/log/auth.log', 'class': 'objective' },
       { text: '────────────────────────────────────', 'class': 'objective' },
@@ -419,7 +419,7 @@ WS.stages = [
       { text: '', 'class': '' },
     ],
     objective: [
-      { text: '─── 임무 목표 ───', 'class': 'objective' },
+      { text: '──────────────── 임무 목표 ────────────────', 'class': 'objective' },
       { text: '1단계: 열린 포트와 리스닝 프로세스를 확인하라', 'class': 'objective' },
       { text: '2단계: 의심 포트를 사용하는 프로세스를 추적하라', 'class': 'objective' },
       { text: '────────────────────────────────────', 'class': 'objective' },
@@ -527,7 +527,7 @@ WS.stages = [
       { text: '', 'class': '' },
     ],
     objective: [
-      { text: '─── 임무 목표 ───', 'class': 'objective' },
+      { text: '──────────────── 임무 목표 ────────────────', 'class': 'objective' },
       { text: 'iptables로 공격자 IP (45.33.32.156)를 차단하라', 'class': 'objective' },
       { text: '────────────────────────────────────', 'class': 'objective' },
       { text: '', 'class': '' },
@@ -591,7 +591,7 @@ WS.stages = [
       { text: '', 'class': '' },
     ],
     objective: [
-      { text: '─── 임무 목표 ───', 'class': 'objective' },
+      { text: '──────────────── 임무 목표 ────────────────', 'class': 'objective' },
       { text: '리버스 셸 프로세스(PID 8752)를 종료하라', 'class': 'objective' },
       { text: '────────────────────────────────────', 'class': 'objective' },
       { text: '', 'class': '' },
@@ -656,7 +656,7 @@ WS.stages = [
       { text: '', 'class': '' },
     ],
     objective: [
-      { text: '─── 임무 목표 ───', 'class': 'objective' },
+      { text: '──────────────── 임무 목표 ────────────────', 'class': 'objective' },
       { text: '1단계: 실시간 CPU 점유율을 확인하라', 'class': 'objective' },
       { text: '2단계: 악성 프로세스를 강제 종료하라', 'class': 'objective' },
       { text: '────────────────────────────────────', 'class': 'objective' },
@@ -754,7 +754,7 @@ WS.stages = [
       { text: '', 'class': '' },
     ],
     objective: [
-      { text: '─── 임무 목표 ───', 'class': 'objective' },
+      { text: '──────────────── 임무 목표 ────────────────', 'class': 'objective' },
       { text: '1단계: 현재 크론잡 목록을 확인하라', 'class': 'objective' },
       { text: '2단계: 악성 크론잡을 제거하라', 'class': 'objective' },
       { text: '────────────────────────────────────', 'class': 'objective' },
@@ -844,7 +844,7 @@ WS.stages = [
       { text: '', 'class': '' },
     ],
     objective: [
-      { text: '─── 임무 목표 ───', 'class': 'objective' },
+      { text: '──────────────── 임무 목표 ────────────────', 'class': 'objective' },
       { text: '1단계: 시스템 사용자 계정 목록을 확인하라', 'class': 'objective' },
       { text: '2단계: SUID 권한이 설정된 파일을 검색하라', 'class': 'objective' },
       { text: '3단계: 악성 SUID 백도어 파일을 삭제하라', 'class': 'objective' },
@@ -982,7 +982,7 @@ WS.stages = [
       { text: '', 'class': '' },
     ],
     objective: [
-      { text: '─── 임무 목표 ───', 'class': 'objective' },
+      { text: '──────────────── 임무 목표 ────────────────', 'class': 'objective' },
       { text: '1단계: 웹 디렉토리에서 최근 수정 파일을 검색하라', 'class': 'objective' },
       { text: '2단계: 발견된 웹셸을 삭제하라', 'class': 'objective' },
       { text: '────────────────────────────────────', 'class': 'objective' },
@@ -1081,7 +1081,7 @@ WS.stages = [
       { text: '', 'class': '' },
     ],
     objective: [
-      { text: '─── 임무 목표 ───', 'class': 'objective' },
+      { text: '──────────────── 임무 목표 ────────────────', 'class': 'objective' },
       { text: 'ESTABLISHED 상태의 네트워크 세션을 확인하여', 'class': 'objective' },
       { text: '비정상적인 외부 통신을 탐지하라', 'class': 'objective' },
       { text: '────────────────────────────────────', 'class': 'objective' },
@@ -1152,7 +1152,7 @@ WS.stages = [
       { text: '', 'class': '' },
     ],
     objective: [
-      { text: '─── 임무 목표 ───', 'class': 'objective' },
+      { text: '──────────────── 임무 목표 ────────────────', 'class': 'objective' },
       { text: '위장 RAT 프로세스(PID 10933)를 강제 종료하라', 'class': 'objective' },
       { text: '────────────────────────────────────', 'class': 'objective' },
       { text: '', 'class': '' },
@@ -1218,7 +1218,7 @@ WS.stages = [
       { text: '', 'class': '' },
     ],
     objective: [
-      { text: '─── 임무 목표 ───', 'class': 'objective' },
+      { text: '──────────────── 임무 목표 ────────────────', 'class': 'objective' },
       { text: '/var/data 에서 최근 10분 내 생성/수정된 파일을 찾아라', 'class': 'objective' },
       { text: '────────────────────────────────────', 'class': 'objective' },
       { text: '', 'class': '' },
@@ -1293,7 +1293,7 @@ WS.stages = [
       { text: '', 'class': '' },
     ],
     objective: [
-      { text: '─── 임무 목표 ───', 'class': 'objective' },
+      { text: '──────────────── 임무 목표 ────────────────', 'class': 'objective' },
       { text: '원본 DB를 AES-256-CBC로 암호화하라', 'class': 'objective' },
       { text: '입력: /var/data/agent_biometrics.csv', 'class': 'objective' },
       { text: '출력: /var/data/agent_biometrics.enc', 'class': 'objective' },
@@ -1365,7 +1365,7 @@ WS.stages = [
       { text: '', 'class': '' },
     ],
     objective: [
-      { text: '─── 임무 목표 ───', 'class': 'objective' },
+      { text: '──────────────── 임무 목표 ────────────────', 'class': 'objective' },
       { text: '원본 평문 파일과 임시 압축 파일을 shred로 영구 삭제하라', 'class': 'objective' },
       { text: '대상: /var/data/agent_biometrics.csv, /var/data/*_temp.tar.gz', 'class': 'objective' },
       { text: '────────────────────────────────────', 'class': 'objective' },
@@ -1444,7 +1444,7 @@ WS.stages = [
       { text: '', 'class': '' },
     ],
     objective: [
-      { text: '─── 임무 목표 ───', 'class': 'objective' },
+      { text: '──────────────── 임무 목표 ────────────────', 'class': 'objective' },
       { text: '1단계: SSH 설정 파일을 열어라', 'class': 'objective' },
       { text: '2단계: PermitRootLogin을 no로 변경하라', 'class': 'objective' },
       { text: '3단계: SSH 서비스를 재시작하라', 'class': 'objective' },
@@ -1560,7 +1560,7 @@ WS.stages = [
       { text: '', 'class': '' },
     ],
     objective: [
-      { text: '─── 임무 목표 ───', 'class': 'objective' },
+      { text: '──────────────── 임무 목표 ────────────────', 'class': 'objective' },
       { text: '1단계: 바이너리에서 해커 그룹 시그니처를 검색하라', 'class': 'objective' },
       { text: '2단계: 발견된 Base64 암호문을 해독하라', 'class': 'objective' },
       { text: '────────────────────────────────────', 'class': 'objective' },
@@ -1659,7 +1659,7 @@ WS.stages = [
       { text: '', 'class': '' },
     ],
     objective: [
-      { text: '─── 임무 목표 ───', 'class': 'objective' },
+      { text: '──────────────── 임무 목표 ────────────────', 'class': 'objective' },
       { text: '1단계: 로그인 실패 이력을 확인하라', 'class': 'objective' },
       { text: '2단계: 해커가 실행한 명령어 내역을 추적하라', 'class': 'objective' },
       { text: '────────────────────────────────────', 'class': 'objective' },
@@ -1758,7 +1758,7 @@ WS.stages = [
       { text: '', 'class': '' },
     ],
     objective: [
-      { text: '─── 임무 목표 ───', 'class': 'objective' },
+      { text: '──────────────── 임무 목표 ────────────────', 'class': 'objective' },
       { text: '1단계: shadow 파일에서 패스워드 해시를 확인하라', 'class': 'objective' },
       { text: '2단계: root 계정의 패스워드 만료 정책을 설정하라', 'class': 'objective' },
       { text: '────────────────────────────────────', 'class': 'objective' },
@@ -1858,7 +1858,7 @@ WS.stages = [
       { text: '', 'class': '' },
     ],
     objective: [
-      { text: '─── 임무 목표 ───', 'class': 'objective' },
+      { text: '──────────────── 임무 목표 ────────────────', 'class': 'objective' },
       { text: '서버(10.0.0.5)의 웰노운 포트를 SYN 스캔하라', 'class': 'objective' },
       { text: '────────────────────────────────────', 'class': 'objective' },
       { text: '', 'class': '' },
@@ -1933,7 +1933,7 @@ WS.stages = [
       { text: '', 'class': '' },
     ],
     objective: [
-      { text: '─── 임무 목표 ───', 'class': 'objective' },
+      { text: '──────────────── 임무 목표 ────────────────', 'class': 'objective' },
       { text: '1단계: /etc/passwd에 불변 속성을 부여하라 (chattr)', 'class': 'objective' },
       { text: '2단계: /etc/shadow 파일 변조 감시를 설정하라 (auditctl)', 'class': 'objective' },
       { text: '────────────────────────────────────', 'class': 'objective' },
@@ -2103,7 +2103,7 @@ WS.stages = [
       { text: '', 'class': '' },
     ],
     objective: [
-      { text: '─── 임무 목표 ───', 'class': 'objective' },
+      { text: '──────────────── 임무 목표 ────────────────', 'class': 'objective' },
       { text: 'OT 네트워크(eth1)에서 Modbus 트래픽(port 502)을 캡처하라', 'class': 'objective' },
       { text: '저장 파일: robot_control.pcap', 'class': 'objective' },
       { text: '────────────────────────────────────', 'class': 'objective' },
@@ -2191,7 +2191,7 @@ WS.stages = [
       { text: '', 'class': '' },
     ],
     objective: [
-      { text: '─── 임무 목표 ───', 'class': 'objective' },
+      { text: '──────────────── 임무 목표 ────────────────', 'class': 'objective' },
       { text: 'HMI 대시보드 바이너리의 무결성(해시)을 검증하라', 'class': 'objective' },
       { text: '파일: /opt/hmi/bin/dashboard_viewer', 'class': 'objective' },
       { text: '────────────────────────────────────', 'class': 'objective' },
@@ -2271,7 +2271,7 @@ WS.stages = [
       { text: '', 'class': '' },
     ],
     objective: [
-      { text: '─── 임무 목표 ───', 'class': 'objective' },
+      { text: '──────────────── 임무 목표 ────────────────', 'class': 'objective' },
       { text: '백업 펌웨어를 TFTP 서버 디렉토리로 강제 복사하여 롤백하라', 'class': 'objective' },
       { text: '원본: /mnt/backup/firmware_v1.bin', 'class': 'objective' },
       { text: '대상: /srv/tftp/robot_boot.bin', 'class': 'objective' },
@@ -2347,7 +2347,7 @@ WS.stages = [
       { text: '', 'class': '' },
     ],
     objective: [
-      { text: '─── 임무 목표 ───', 'class': 'objective' },
+      { text: '──────────────── 임무 목표 ────────────────', 'class': 'objective' },
       { text: '공격자 C2 네트워크(10.99.99.0/24) 라우팅을 제거하라', 'class': 'objective' },
       { text: '라우팅 테이블에서 해당 대역을 완전히 삭제', 'class': 'objective' },
       { text: '────────────────────────────────────', 'class': 'objective' },
@@ -2438,7 +2438,7 @@ WS.stages = [
       { text: '', 'class': '' },
     ],
     objective: [
-      { text: '─── 임무 목표 ───', 'class': 'objective' },
+      { text: '──────────────── 임무 목표 ────────────────', 'class': 'objective' },
       { text: '1단계: 냉각 밸브 잠금 프로세스(coolant_valve) PID 확인', 'class': 'objective' },
       { text: '2단계: 해당 프로세스를 강제 종료하여 냉각 시스템 복구', 'class': 'objective' },
       { text: '────────────────────────────────────', 'class': 'objective' },
@@ -2577,7 +2577,7 @@ WS.stages = [
       { text: '', 'class': '' },
     ],
     objective: [
-      { text: '─── 임무 목표 ───', 'class': 'objective' },
+      { text: '──────────────── 임무 목표 ────────────────', 'class': 'objective' },
       { text: '1단계: 웹 로그를 분석하여 공격 상위 IP를 추출하라', 'class': 'objective' },
       { text: '2단계: 공격 대역을 iptables로 차단하라', 'class': 'objective' },
       { text: '────────────────────────────────────', 'class': 'objective' },
@@ -2687,7 +2687,7 @@ WS.stages = [
       { text: '  OPERATION: WHITE SHIELD & IRONCLAD - COMPLETE', 'class': 'success' },
       { text: '═══════════════════════════════════════════════════════════', 'class': 'success' },
       { text: '', 'class': '', delay: 500 },
-      { text: '─── G-DECK 작전 결과 보고서 ───', 'class': 'objective' },
+      { text: '──────────── G-DECK 작전 결과 보고서 ────────────', 'class': 'objective' },
       { text: '', 'class': '' },
       { text: '  요원: {name}', 'class': 'objective', speed: 15 },
       { text: '  장비: G-DECK v3.7 | 지원: O.R.O.R.A', 'class': 'objective', speed: 15 },
@@ -2730,7 +2730,7 @@ WS.stages = [
       { text: '', 'class': '', delay: 600 },
       { text: '[O.R.O.R.A] 공격자 인프라 분석 완료. Blackwing C2 서버 로그에서 최종 메시지 복호화:', 'class': 'system', delay: 400 },
       { text: '', 'class': '' },
-      { text: '  ─── Blackwing ───', 'class': 'enemy' },
+      { text: '  ──────────────── Blackwing ──────────────────', 'class': 'enemy' },
       { text: '  인정한다, {name}. 이번은 네가 이겼어.', 'class': 'enemy', speed: 12 },
       { text: '  서버도 막고, SCADA도 지키고, DDoS까지.', 'class': 'enemy', speed: 12 },
       { text: '', 'class': '' },
@@ -2739,7 +2739,7 @@ WS.stages = [
       { text: '', 'class': '' },
       { text: '  다음에 만나면... v3.0으로 찾아가마.', 'class': 'enemy', speed: 12 },
       { text: '                          -- Blackwing', 'class': 'enemy', speed: 12 },
-      { text: '  ────────────────────────', 'class': 'enemy' },
+      { text: '  ──────────────────────────────────────────', 'class': 'enemy' },
       { text: '', 'class': '', delay: 600 },
       { text: '[단장] ...', 'class': 'commander', delay: 500 },
       { text: '[단장] {name}.', 'class': 'commander', delay: 400 },
