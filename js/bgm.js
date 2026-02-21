@@ -82,4 +82,42 @@ WS.BGM = class BGM {
     this.toggleBtn.classList.add('muted');
     this.toggleBtn.textContent = '\u266B'; // ♫
   }
+
+  /** Switch to ending BGM track (crossfade). */
+  switchToEnding() {
+    var endingAudio = document.getElementById('bgm-ending');
+    if (!endingAudio) return;
+
+    var self = this;
+    var vol = this.audio.volume;
+
+    // Fade out current BGM
+    var fadeOut = setInterval(function() {
+      if (self.audio.volume > 0.05) {
+        self.audio.volume = Math.max(0, self.audio.volume - 0.05);
+      } else {
+        clearInterval(fadeOut);
+        self.audio.pause();
+        self.audio.volume = vol;
+
+        // Switch to ending track
+        endingAudio.volume = 0;
+        endingAudio.play().then(function() {
+          // Fade in ending BGM
+          var fadeIn = setInterval(function() {
+            if (endingAudio.volume < vol - 0.05) {
+              endingAudio.volume = Math.min(vol, endingAudio.volume + 0.05);
+            } else {
+              endingAudio.volume = vol;
+              clearInterval(fadeIn);
+            }
+          }, 50);
+
+          // Bind volume slider to ending audio
+          self.audio = endingAudio;
+          self.playing = true;
+        }).catch(function() {});
+      }
+    }, 50);
+  }
 };

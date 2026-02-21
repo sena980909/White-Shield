@@ -12,6 +12,7 @@ WS.StageManager = class StageManager {
     this.stages = stages;
     this.audio = audio || null;
     this.hud = hud || null;
+    this.bgm = null;
     this.hintSystem = new WS.HintSystem();
 
     this.currentStageIndex = 0;
@@ -151,15 +152,34 @@ WS.StageManager = class StageManager {
         this.hud.setTitan('NEUTRALIZED');
         this.hud.setTemp(42, '°C');
         this.hud.setStealth(100);
+        if (this.bgm) this.bgm.switchToEnding();
         break;
     }
   }
 
-  async start() {
-    for (var i = 0; i < this.stages.length; i++) {
+  async start(startIndex) {
+    var begin = (typeof startIndex === 'number' && startIndex > 0) ? startIndex : 0;
+
+    // Replay HUD state for skipped stages (instant, synchronous)
+    for (var j = 0; j < begin; j++) {
+      this._updateHUD(this.stages[j]);
+    }
+
+    for (var i = begin; i < this.stages.length; i++) {
       this.currentStageIndex = i;
       this._updateHUD(this.stages[i]);
       await this.runStage(this.stages[i]);
+
+      // Auto-save after each stage
+      if (this.stages[i].next) {
+        WS.SaveManager.save(WS.playerName, i + 1, this.stages[i].next);
+      } else {
+        // Game complete — clear save, show certificate
+        WS.SaveManager.clear();
+        await this._wait(1500);
+        WS.Certificate.show(WS.playerName, this._missionStages.length);
+      }
+
       if (!this.stages[i].next) break;
     }
   }

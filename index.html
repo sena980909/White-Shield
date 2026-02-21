@@ -43,9 +43,54 @@
     </div>
   </div>
 
-  <!-- BGM Audio Element -->
+  <!-- Certificate Overlay (hidden by default) -->
+  <div id="certificate-overlay">
+    <div id="certificate-card">
+      <div class="cert-header">
+        <div class="cert-title">OPERATION: WHITE SHIELD & IRONCLAD</div>
+        <div class="cert-subtitle">MISSION COMPLETE CERTIFICATE</div>
+      </div>
+      <div class="cert-divider">════════════════════════════════════════</div>
+      <div class="cert-body">
+        <div class="cert-field">
+          <span class="cert-label">Agent:</span>
+          <span class="cert-value" id="cert-name">---</span>
+        </div>
+        <div class="cert-field">
+          <span class="cert-label">Date:</span>
+          <span class="cert-value" id="cert-date">---</span>
+        </div>
+        <div class="cert-field">
+          <span class="cert-label">Missions:</span>
+          <span class="cert-value cert-clear" id="cert-missions">---</span>
+        </div>
+        <div class="cert-spacer"></div>
+        <div class="cert-assessment">
+          <div class="cert-assess-title">── O.R.O.R.A ASSESSMENT ──</div>
+          <div class="cert-bar"><span class="cert-bar-label">탐지 능력:</span> <span class="cert-bar-fill">██████████</span> 탁월</div>
+          <div class="cert-bar"><span class="cert-bar-label">대응 속도:</span> <span class="cert-bar-fill">██████████</span> 탁월</div>
+          <div class="cert-bar"><span class="cert-bar-label">위기 대처:</span> <span class="cert-bar-fill">██████████</span> 탁월</div>
+          <div class="cert-rating">Rating: <span class="cert-stars">★★★★★</span> EXCEPTIONAL</div>
+        </div>
+        <div class="cert-spacer"></div>
+        <div class="cert-quote">
+          <div class="cert-quote-text">"The shield held."</div>
+          <div class="cert-quote-attr">— Commander</div>
+        </div>
+      </div>
+      <div class="cert-actions">
+        <button id="cert-copy-btn" class="cert-btn" onclick="WS.Certificate.copyText()">텍스트 복사</button>
+        <button id="cert-image-btn" class="cert-btn" onclick="WS.Certificate.saveImage()">이미지 저장</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- BGM Audio Elements -->
   <audio id="bgm-audio" loop preload="auto">
     <source src="bgm/White Shield.mp3" type="audio/mpeg">
+  </audio>
+  <audio id="bgm-ending" preload="none">
+    <source src="bgm/White Shield ENDING.mp3" type="audio/mpeg">
   </audio>
 
   <!-- Load order matters: data first, then engine, then bootstrap -->
@@ -56,6 +101,8 @@
   <script src="js/hint-system.js"></script>
   <script src="js/terminal.js"></script>
   <script src="js/hud.js"></script>
+  <script src="js/save-manager.js"></script>
+  <script src="js/certificate.js"></script>
   <script src="js/stage-manager.js"></script>
   <script src="js/bgm.js"></script>
   <script src="js/main.js"></script>

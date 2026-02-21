@@ -1,5 +1,5 @@
 /**
- * Main - G-DECK bootstrap with nickname prompt and intro sequence.
+ * Main - G-DECK bootstrap with nickname prompt, save detection, and intro sequence.
  */
 var WS = window.WS || {};
 
@@ -30,6 +30,12 @@ var BOOT_LINES = [
   { text: '', 'class': '' },
 ];
 
+function _showLogo(terminal) {
+  for (var i = 0; i < ASCII_LOGO.length; i++) {
+    terminal.printLine(ASCII_LOGO[i], 'ascii-art');
+  }
+}
+
 document.addEventListener('DOMContentLoaded', async function() {
   var containerEl = document.getElementById('terminal');
   var audio = new WS.Audio();
@@ -43,11 +49,52 @@ document.addEventListener('DOMContentLoaded', async function() {
   var bgm = new WS.BGM();
   var hud = new WS.HUD();
 
-  // Boot sequence
-  for (var i = 0; i < ASCII_LOGO.length; i++) {
-    terminal.printLine(ASCII_LOGO[i], 'ascii-art');
-  }
+  // Display ASCII logo
+  _showLogo(terminal);
   await wait(500);
+
+  // ── Save Detection ──
+  var saveData = WS.SaveManager.load();
+  if (saveData) {
+    await terminal.typeLine('[G-DECK] 이전 진행 상황이 감지되었습니다.', 'system', 20);
+    await terminal.typeLine('[G-DECK] 요원: ' + saveData.playerName, 'system', 20);
+    terminal.printBlank();
+    await terminal.typeLine('이어서 진행하시겠습니까? (Y/N)', 'objective', 25);
+
+    var answer = '';
+    while (answer !== 'y' && answer !== 'n') {
+      answer = (await terminal.waitForInput()).trim().toLowerCase();
+      if (answer !== 'y' && answer !== 'n') {
+        await terminal.typeLine('[G-DECK] Y 또는 N을 입력하세요.', 'system', 20);
+      }
+    }
+
+    if (answer === 'y') {
+      // Resume: restore state, skip boot/nickname
+      WS.playerName = saveData.playerName;
+      hud.show();
+      hud.setOracle('ONLINE');
+      terminal.printBlank();
+      await terminal.typeLine('[G-DECK] 세션 복원 중...', 'system', 20);
+      await wait(300);
+      await terminal.typeLine('[단장] 돌아왔군, ' + WS.playerName + '. 바로 이어서 가지.', 'commander', 25);
+      terminal.printBlank();
+      await wait(300);
+
+      var game = new WS.StageManager(terminal, WS.stages, audio, hud);
+      game.bgm = bgm;
+      await game.start(saveData.stageIndex);
+      return;
+    } else {
+      // New game: clear save, re-display logo
+      WS.SaveManager.clear();
+      terminal.clear();
+      _showLogo(terminal);
+      await wait(500);
+    }
+  }
+
+  // ── Normal Boot ──
   await terminal.typeLines(BOOT_LINES);
 
   // ── Nickname Prompt ──
@@ -94,6 +141,7 @@ document.addEventListener('DOMContentLoaded', async function() {
 
   // Start game
   var game = new WS.StageManager(terminal, WS.stages, audio, hud);
+  game.bgm = bgm;
   await game.start();
 });
 
