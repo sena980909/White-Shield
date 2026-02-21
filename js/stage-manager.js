@@ -200,6 +200,13 @@ WS.StageManager = class StageManager {
       var result = WS.matchCommand(input, commandDef);
       if (result.matched) return;
 
+      // Typo suggestion (before wrong-answer feedback)
+      var typoSuggestion = WS.checkTypo(input);
+      if (typoSuggestion) {
+        var typoMsg = strings.typoSuggestion.replace('{cmd}', typoSuggestion);
+        await this.terminal.typeLine(typoMsg, 'hint', 20);
+      }
+
       // Soft failure - rotating commander messages
       if (result.type === WS.MatchType.PARTIAL) {
         var partialMsg = (commandDef.wrongFeedback && commandDef.wrongFeedback.partial)

@@ -38,5 +38,7 @@ WS.strings = {
 
   statusFormat: '[G-DECK] 현재 임무: {title} | 진행: {current}/{total} 단계',
 
+  typoSuggestion: '[G-DECK] 혹시 \'{cmd}\' 명령어를 입력하려고 했나요?',
+
   quitConfirm: '[G-DECK] 작전을 중단하시겠습니까? 현재 진행 상황은 저장되지 않습니다.',
 };
