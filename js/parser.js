@@ -84,6 +84,7 @@ var KNOWN_COMMANDS = [
   'tail', 'less', 'ls', 'cd', 'pwd', 'mkdir', 'mv', 'ip',
   'service', 'wget', 'curl', 'whoami', 'id', 'df', 'du',
   'mount', 'umount', 'tar', 'gzip', 'sed', 'wc',
+  'openssl', 'shred', 'ss', 'df',
 ];
 
 /** Levenshtein edit distance */

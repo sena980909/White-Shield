@@ -20,11 +20,16 @@ WS.StageManager = class StageManager {
     this._wrongIdx = 0;
     this._partialIdx = 0;
 
-    // Count mission stages (those with commands) for HUD
+    // Count mission stages (those with commands, excluding tutorial) for HUD
     this._missionStages = [];
+    this._tutorialStages = [];
     for (var i = 0; i < stages.length; i++) {
       if (stages[i].commands && stages[i].commands.length > 0) {
-        this._missionStages.push(stages[i].id);
+        if (stages[i].id.indexOf('stage_t') === 0) {
+          this._tutorialStages.push(stages[i].id);
+        } else {
+          this._missionStages.push(stages[i].id);
+        }
       }
     }
   }
@@ -55,7 +60,11 @@ WS.StageManager = class StageManager {
     if (!this.hud) return;
     var id = stage.id;
 
-    // Update mission counter
+    // Update mission counter (tutorial shows separately)
+    var tIdx = this._tutorialStages.indexOf(id);
+    if (tIdx >= 0) {
+      this.hud.setMission('T' + (tIdx + 1), this._tutorialStages.length);
+    }
     var mIdx = this._missionStages.indexOf(id);
     if (mIdx >= 0) {
       this.hud.setMission(mIdx + 1, this._missionStages.length);
@@ -63,6 +72,12 @@ WS.StageManager = class StageManager {
 
     // Stage-specific HUD updates
     switch (id) {
+      // VR Training
+      case 'stage_t0':
+        this.hud.setTitan('VR TRAINING');
+        this.hud.setStealth(100);
+        break;
+
       // ACT 1 - normal ops
       case 'stage_1':
         this.hud.setTitan('--');
@@ -79,6 +94,24 @@ WS.StageManager = class StageManager {
         break;
       case 'stage_14':
         this.hud.setStealth(70);
+        break;
+
+      // Data breach episode
+      case 'stage_db1':
+        this.hud.setStealth(50);
+        this.hud.attackAlert();
+        break;
+      case 'stage_db2':
+        this.hud.setStealth(45);
+        break;
+      case 'stage_db3':
+        this.hud.setStealth(40);
+        break;
+      case 'stage_db4':
+        this.hud.setStealth(55);
+        break;
+      case 'stage_db5':
+        this.hud.setStealth(65);
         break;
 
       // ACT 2 transition - dramatic HUD shift
@@ -134,6 +167,8 @@ WS.StageManager = class StageManager {
   async runStage(stage) {
     this.currentCommandIndex = 0;
     this.hintSystem.resetForNewStage();
+    // Tutorial stages get faster auto-hints
+    this.hintSystem.autoHintThreshold = (stage.id.indexOf('stage_t') === 0) ? 2 : 3;
 
     // BRIEFING
     this.state = 'BRIEFING';
@@ -200,6 +235,16 @@ WS.StageManager = class StageManager {
       var result = WS.matchCommand(input, commandDef);
       if (result.matched) return;
 
+      // Lenient match (tutorial) — accept with coaching feedback
+      if (commandDef.lenient) {
+        var lenientFeedback = this._checkLenient(input, commandDef.lenient);
+        if (lenientFeedback) {
+          await this.terminal.typeLine(this._t(lenientFeedback), 'commander', 20);
+          this.terminal.printBlank();
+          return;
+        }
+      }
+
       // Dangerous command warning (skip normal wrong-answer flow)
       var dangerousMsg = WS.checkDangerous(input);
       if (dangerousMsg) {
@@ -237,6 +282,8 @@ WS.StageManager = class StageManager {
           ? this._t('[단장] ' + commandDef.wrongFeedback.partial)
           : this._pickRotating(strings.wrongPartial, '_partialIdx');
         await this.terminal.typeLine(partialMsg, 'commander', 20);
+      } else if (commandDef.nudge) {
+        await this.terminal.typeLine(this._t('[단장] ' + commandDef.nudge), 'hint', 20);
       } else {
         await this.terminal.typeLine(
           this._pickRotating(strings.wrongGeneric, '_wrongIdx'),
@@ -319,6 +366,17 @@ WS.StageManager = class StageManager {
         this.terminal.printBlank();
         break;
     }
+  }
+
+  /** Check lenient matches for tutorial stages */
+  _checkLenient(rawInput, lenientArr) {
+    var input = WS.normalize(rawInput);
+    for (var i = 0; i < lenientArr.length; i++) {
+      if (new RegExp(lenientArr[i].match, 'i').test(input)) {
+        return lenientArr[i].feedback;
+      }
+    }
+    return null;
   }
 
   _wait(ms) {

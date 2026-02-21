@@ -8,7 +8,7 @@ WS.HintSystem = class HintSystem {
   constructor() {
     this.wrongCount = 0;
     this.hintIndex = 0;
-    this.autoHintThreshold = 2; // trigger fast - keep players moving
+    this.autoHintThreshold = 3; // default for main game
   }
 
   /** Record a wrong attempt. Returns true if auto-hint should trigger. */

@@ -88,7 +88,7 @@ document.addEventListener('DOMContentLoaded', async function() {
   terminal.printBlank();
   await terminal.typeLine('help - 도움말 | hint - 힌트 | clear - 화면 초기화', 'dim', 15);
   terminal.printBlank();
-  await terminal.typeLine('[단장] 준비됐나, ' + WS.playerName + '? 바로 시작하지.', 'commander', 25);
+  await terminal.typeLine('[단장] 그 전에 기본기부터 점검하지. VR 훈련에 접속한다, ' + WS.playerName + '.', 'commander', 25);
   terminal.printBlank();
   await wait(500);
 

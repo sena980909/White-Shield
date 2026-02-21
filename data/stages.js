@@ -1,11 +1,323 @@
 /**
  * Stage definitions for Operation: White Shield & Ironclad
  * ACT 1: 14 missions (IT security) | ACT 2: 5 missions (SCADA/OT security)
- * Attacker IPs: 45.33.32.156 (IT), 10.99.99.5 (OT) | Hacker group: Gashiga
+ * Attacker IPs: 45.33.32.156 (IT), 10.99.99.5 (OT) | Hacker group: Blackwing
  */
 var WS = window.WS || {};
 
 WS.stages = [
+
+  /* ══════════════════════════════════════════
+   * EPISODE 0: 시스템 동기화 (VR Training)
+   * ══════════════════════════════════════════ */
+
+  // ── VR TRAINING INTRO (대사만, 명령어 없음) ──
+  {
+    id: 'stage_t0',
+    title: 'Episode 0: VR Training',
+    briefing: [
+      { text: '', 'class': '' },
+      { text: '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'class': 'dim' },
+      { text: '  EPISODE 0: 시스템 동기화 (VR Training)', 'class': 'ascii-art' },
+      { text: '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'class': 'dim' },
+      { text: '', 'class': '' },
+      { text: '[G-DECK] VR 훈련 시뮬레이션 로드 중...', 'class': 'system', delay: 500 },
+      { text: '[G-DECK] 가상 환경: MSA Gateway Training Sandbox', 'class': 'system', delay: 300 },
+      { text: '[G-DECK] 위험도: NONE (안전 환경)', 'class': 'system', delay: 300 },
+      { text: '', 'class': '' },
+      { text: '[단장] {name}, 실전 투입 전에 기본기를 점검하겠다.', 'class': 'commander', delay: 400 },
+      { text: '[단장] 여기는 VR 훈련 환경이야. 뭘 잘못 쳐도 실제 서버에 영향은 없으니 편하게 해.', 'class': 'commander', delay: 300 },
+      { text: '[단장] 대신... 기본도 못 하면 실전에 내보낼 수 없다는 건 알지?', 'class': 'commander', delay: 400 },
+      { text: '', 'class': '' },
+    ],
+    objective: [],
+    commands: [],
+    next: 'stage_t1',
+  },
+
+  // ── 훈련 1: 현재 위치 및 권한 확인 ──
+  {
+    id: 'stage_t1',
+    title: '훈련 1: 현재 위치 및 권한 확인',
+    briefing: [
+      { text: '[단장] 먼저 자네가 접속한 터미널의 현재 경로가 어디인지 확인해 봐라.', 'class': 'commander' },
+      { text: '[단장] 기본 중의 기본이지.', 'class': 'commander', delay: 300 },
+      { text: '', 'class': '' },
+    ],
+    objective: [
+      { text: '┌─ 훈련 목표 ────────────────────────────────────┐', 'class': 'objective' },
+      { text: '│ 현재 작업 디렉토리를 확인하라 (pwd, whoami, id)   │', 'class': 'objective' },
+      { text: '└────────────────────────────────────────────────┘', 'class': 'objective' },
+      { text: '', 'class': '' },
+    ],
+    commands: [
+      {
+        id: 'check_location',
+        exact: 'pwd',
+        alts: ['whoami', 'id', 'sudo pwd', 'sudo whoami', 'sudo id'],
+        keywords: ['pwd'],
+        pattern: '^(sudo\\s+)?(pwd|whoami|id)$',
+        nudge: '{name}, 긴장했나? 현재 위치를 확인하는 명령어야. p...로 시작하는 세 글자 명령어지.',
+        lenient: [
+          { match: '^(sudo\\s+)?(ls|dir|cd)\\b', feedback: '[단장] 흠, 비슷한 걸 치긴 했는데... 현재 "경로"를 출력하는 명령어가 따로 있어. p로 시작하지.' },
+        ],
+      },
+    ],
+    interstitial: {
+      check_location: [
+        { text: '', 'class': '' },
+        { text: '/opt/training_sandbox/msa_gateway', 'class': 'system' },
+        { text: '[G-DECK] 요원 권한 확인 완료. 훈련을 속행합니다.', 'class': 'system', delay: 300 },
+        { text: '', 'class': '' },
+        { text: '[O.R.O.R.A] 참고: pwd = Print Working Directory. 현재 폴더 경로를 출력합니다.', 'class': 'dim', speed: 12 },
+        { text: '[O.R.O.R.A] 참고: whoami = 현재 로그인한 사용자 이름을 출력합니다.', 'class': 'dim', speed: 12 },
+        { text: '', 'class': '' },
+      ],
+    },
+    success: [
+      { text: '[단장] 좋아, 기본은 되는군. 다음으로 넘어가지.', 'class': 'commander' },
+      { text: '', 'class': '' },
+    ],
+    hints: [
+      { text: 'p로 시작하는 세 글자 명령어입니다.' },
+      { text: 'Print Working Directory의 약자입니다.' },
+      { text: 'pwd를 입력하세요.' },
+    ],
+    next: 'stage_t2',
+  },
+
+  // ── 훈련 2: 디스크 용량 점검 (로그 폭탄 방어) ──
+  {
+    id: 'stage_t2',
+    title: '훈련 2: 디스크 용량 점검',
+    briefing: [
+      { text: '[단장] 해커들이 자주 쓰는 원시적인 수법 중 하나는,', 'class': 'commander' },
+      { text: '[단장] 쓰레기 데이터를 무한대로 생성해 서버 디스크를 꽉 채워 다운시키는 거다.', 'class': 'commander' },
+      { text: '[단장] 현재 디스크 남은 용량을 사람이 읽기 편한 단위(MB, GB)로 확인해 봐라.', 'class': 'commander', delay: 300 },
+      { text: '', 'class': '' },
+    ],
+    objective: [
+      { text: '┌─ 훈련 목표 ──────────────────────────────────┐', 'class': 'objective' },
+      { text: '│ 디스크 사용량을 확인하라 (df -h)               │', 'class': 'objective' },
+      { text: '└──────────────────────────────────────────────┘', 'class': 'objective' },
+      { text: '', 'class': '' },
+    ],
+    commands: [
+      {
+        id: 'check_disk',
+        exact: 'df -h',
+        alts: ['df -H', 'df -ah', 'df -Th', 'sudo df -h', 'df -lh'],
+        keywords: ['df', '-h'],
+        pattern: '^(sudo\\s+)?df\\s+.*-[ahHTl]',
+        nudge: '{name}, 디스크 용량을 볼 때는 d...로 시작하는 두 글자 명령어가 있지. Disk Free의 약자야.',
+        lenient: [
+          { match: '^(sudo\\s+)?df$', feedback: '[단장] df는 맞는데, 옵션이 빠졌군. 다음엔 -h 옵션을 써봐. 사람이 읽기 편한 단위로 보여준다. 이번은 넘어가지.' },
+          { match: '^(sudo\\s+)?du\\b', feedback: '[단장] du는 개별 파일/폴더 크기를 볼 때 쓰는 거야. 전체 디스크 현황은 df로 확인하지. 비슷하니까 헷갈릴 수 있어.' },
+        ],
+      },
+    ],
+    interstitial: {
+      check_disk: [
+        { text: '', 'class': '' },
+        { text: 'Filesystem      Size  Used Avail Use% Mounted on', 'class': 'system' },
+        { text: '/dev/sda1        50G   49G  1.0G  98% /', 'class': 'error' },
+        { text: '', 'class': '' },
+        { text: '[O.R.O.R.A] ██ 경고: 디스크 사용량 98%. 위험 수준입니다.', 'class': 'error', delay: 300 },
+        { text: '', 'class': '' },
+        { text: '[O.R.O.R.A] 참고: df = Disk Free. 디스크 공간 현황을 보여줍니다.', 'class': 'dim', speed: 12 },
+        { text: '[O.R.O.R.A] 참고: -h 옵션 = Human-readable. MB/GB 등 읽기 쉬운 단위로 표시합니다.', 'class': 'dim', speed: 12 },
+        { text: '', 'class': '' },
+      ],
+    },
+    success: [
+      { text: '[단장] 98%라... 누가 디스크를 갈아먹고 있는 거지?', 'class': 'commander' },
+      { text: '[단장] 원인 프로세스를 찾아보자.', 'class': 'commander', delay: 300 },
+      { text: '', 'class': '' },
+    ],
+    hints: [
+      { text: 'd로 시작하는 두 글자 명령어입니다. Disk Free의 약자예요.' },
+      { text: 'df 뒤에 사람이 읽기 편한 옵션(-h)을 붙여야 합니다.' },
+      { text: 'df -h를 입력하세요.' },
+    ],
+    next: 'stage_t3',
+  },
+
+  // ── 훈련 3: 원인 프로세스 탐색 ──
+  {
+    id: 'stage_t3',
+    title: '훈련 3: 원인 프로세스 탐색',
+    briefing: [
+      { text: '[단장] 디스크가 98%나 찼어!', 'class': 'commander' },
+      { text: '[단장] 훈련용 더미 악성코드가 백그라운드에서 로그 폭탄을 만들고 있는 게 분명해.', 'class': 'commander' },
+      { text: '[단장] 현재 실행 중인 모든 프로세스 목록을 띄워서 수상한 녀석이 있는지 찾아라.', 'class': 'commander', delay: 300 },
+      { text: '', 'class': '' },
+    ],
+    objective: [
+      { text: '┌─ 훈련 목표 ──────────────────────────────────┐', 'class': 'objective' },
+      { text: '│ 실행 중인 프로세스 목록을 확인하라 (ps -ef)      │', 'class': 'objective' },
+      { text: '└──────────────────────────────────────────────┘', 'class': 'objective' },
+      { text: '', 'class': '' },
+    ],
+    commands: [
+      {
+        id: 'check_process',
+        exact: 'ps -ef',
+        alts: ['ps aux', 'ps -aux', 'top', 'sudo ps -ef', 'sudo ps aux', 'ps -eF', 'ps -e'],
+        keywords: ['ps'],
+        pattern: '^(sudo\\s+)?(ps(\\s+-[aefuxAEF]+)*|top)$',
+        nudge: '{name}, 실행 중인 프로세스를 보려면 p...로 시작하는 두 글자 명령어가 있어. Process Status의 약자지.',
+        lenient: [
+          { match: '^(sudo\\s+)?ps$', feedback: '[단장] ps는 맞는데, 옵션 없이는 현재 터미널의 프로세스만 보여. 다음엔 -ef를 붙여봐. 이번은 넘어가지.' },
+        ],
+      },
+    ],
+    interstitial: {
+      check_process: [
+        { text: '', 'class': '' },
+        { text: 'UID        PID  PPID  C STIME TTY          TIME CMD', 'class': 'dim' },
+        { text: 'root         1     0  0 09:00 ?        00:00:02 /sbin/init', 'class': 'dim' },
+        { text: 'root       312     1  0 09:00 ?        00:00:00 /usr/sbin/sshd', 'class': 'dim' },
+        { text: 'training  7777     1 99 09:05 ?        00:30:15 /tmp/dummy_log_bomber.sh', 'class': 'error' },
+        { text: '', 'class': '' },
+        { text: '[O.R.O.R.A] 의심 프로세스 감지: PID 7777 — dummy_log_bomber.sh', 'class': 'error', delay: 300 },
+        { text: '[O.R.O.R.A] CPU 사용률 99%, /tmp에서 실행 중. 로그 폭탄 프로세스로 판단됩니다.', 'class': 'error', delay: 200 },
+        { text: '', 'class': '' },
+        { text: '[O.R.O.R.A] 참고: ps = Process Status. 프로세스 목록을 보여줍니다.', 'class': 'dim', speed: 12 },
+        { text: '[O.R.O.R.A] 참고: PID = Process ID. 각 프로세스의 고유 번호입니다. 위의 7777이 범인이죠.', 'class': 'dim', speed: 12 },
+        { text: '', 'class': '' },
+      ],
+    },
+    success: [
+      { text: '[단장] PID 7777번... 저놈이 범인이군. 바로 제거하자.', 'class': 'commander' },
+      { text: '', 'class': '' },
+    ],
+    hints: [
+      { text: 'p로 시작하는 두 글자 명령어입니다. Process Status의 약자예요.' },
+      { text: 'ps 뒤에 -ef 옵션을 붙이면 모든 프로세스를 상세하게 볼 수 있습니다.' },
+      { text: 'ps -ef를 입력하세요.' },
+    ],
+    next: 'stage_t4',
+  },
+
+  // ── 훈련 4: 더미 프로세스 종료 ──
+  {
+    id: 'stage_t4',
+    title: '훈련 4: 더미 프로세스 종료',
+    briefing: [
+      { text: '[단장] PID 7777번... 저놈이 범인이야.', 'class': 'commander' },
+      { text: '[단장] 당장 자비 없이 강제로 프로세스를 죽여버려!', 'class': 'commander', delay: 300 },
+      { text: '', 'class': '' },
+    ],
+    objective: [
+      { text: '┌─ 훈련 목표 ──────────────────────────────────┐', 'class': 'objective' },
+      { text: '│ PID 7777 프로세스를 강제 종료하라 (kill -9 7777) │', 'class': 'objective' },
+      { text: '└──────────────────────────────────────────────┘', 'class': 'objective' },
+      { text: '', 'class': '' },
+    ],
+    commands: [
+      {
+        id: 'kill_bomber',
+        exact: 'kill -9 7777',
+        alts: ['sudo kill -9 7777', 'kill -SIGKILL 7777', 'kill -KILL 7777', 'sudo kill -KILL 7777'],
+        keywords: ['kill', '7777'],
+        pattern: '(sudo\\s+)?kill\\s+(-9|-SIGKILL|-KILL)\\s+7777',
+        nudge: '{name}, 프로세스를 종료하려면 k...로 시작하는 명령어를 써야 해. PID 번호를 기억하지?',
+        lenient: [
+          { match: '^(sudo\\s+)?kill\\s+7777$', feedback: '[단장] 프로세스는 죽었는데, -9 옵션 없이 보냈군. 이건 "부탁"이야. 악성코드한텐 -9로 "즉사" 시켜야 해. 이번은 넘어가지.' },
+          { match: '^(sudo\\s+)?killall\\s+dummy', feedback: '[단장] killall도 방법이긴 한데, 정확한 PID로 죽이는 습관을 들여. 이번은 인정하지.' },
+        ],
+      },
+    ],
+    interstitial: {
+      kill_bomber: [
+        { text: '', 'class': '' },
+        { text: '[G-DECK] Process 7777 terminated.', 'class': 'success' },
+        { text: '[G-DECK] 디스크 I/O가 안정화되었습니다. 디스크 공간 확보 중...', 'class': 'system', delay: 300 },
+        { text: '', 'class': '' },
+        { text: '[O.R.O.R.A] 참고: kill = 프로세스 종료 명령어입니다.', 'class': 'dim', speed: 12 },
+        { text: '[O.R.O.R.A] 참고: -9 = SIGKILL. 가장 강력한 강제 종료 신호입니다.', 'class': 'dim', speed: 12 },
+        { text: '', 'class': '' },
+      ],
+    },
+    success: [
+      { text: '[단장] 잘했다! 로그 폭탄이 제거됐어.', 'class': 'commander' },
+      { text: '[단장] 근데 그놈이 죽기 전에 뒷문을 열어뒀을 수도 있어. 마지막으로 확인하자.', 'class': 'commander', delay: 300 },
+      { text: '', 'class': '' },
+    ],
+    hints: [
+      { text: 'k로 시작하는 명령어입니다. 프로세스를 "죽인다"는 뜻이에요.' },
+      { text: 'kill 뒤에 -9 옵션과 PID 번호(7777)를 넣으면 됩니다.' },
+      { text: 'kill -9 7777을 입력하세요.' },
+    ],
+    next: 'stage_t5',
+  },
+
+  // ── 훈련 5: 열린 포트 점검 (백도어 확인) ──
+  {
+    id: 'stage_t5',
+    title: '훈련 5: 열린 포트 점검',
+    briefing: [
+      { text: '[단장] 프로세스는 죽였지만, 그놈이 죽기 전에 외부망과 통신하려고', 'class': 'commander' },
+      { text: '[단장] 몰래 뒷문(포트)을 열어뒀을 수도 있어.', 'class': 'commander' },
+      { text: '[단장] 시스템에서 현재 리스닝(Listening) 중인 네트워크 포트 상태를 확인해라.', 'class': 'commander', delay: 300 },
+      { text: '', 'class': '' },
+    ],
+    objective: [
+      { text: '┌─ 훈련 목표 ──────────────────────────────────────┐', 'class': 'objective' },
+      { text: '│ 열려있는 네트워크 포트를 확인하라 (netstat -tuln)    │', 'class': 'objective' },
+      { text: '└──────────────────────────────────────────────────┘', 'class': 'objective' },
+      { text: '', 'class': '' },
+    ],
+    commands: [
+      {
+        id: 'check_ports',
+        exact: 'netstat -tuln',
+        alts: ['netstat -an', 'ss -tuln', 'sudo netstat -tuln', 'netstat -tulnp', 'sudo netstat -tulnp', 'ss -tulnp', 'sudo ss -tuln'],
+        keywords: ['netstat'],
+        pattern: '^(sudo\\s+)?(netstat|ss)\\s+(-[tanuplw]+)',
+        nudge: '{name}, 네트워크 상태를 확인하려면 n...으로 시작하는 명령어가 있어. net + stat, 말 그대로 네트워크 상태야.',
+        lenient: [
+          { match: '^(sudo\\s+)?netstat$', feedback: '[단장] netstat은 맞는데, 옵션 없이는 너무 많은 정보가 쏟아져. 다음엔 -tuln을 붙여봐. 이번은 넘어가지.' },
+          { match: '^(sudo\\s+)?ss$', feedback: '[단장] ss도 같은 역할을 하는 최신 명령어야. 좋은 선택이지만, 옵션을 붙여야 유용해. 이번은 인정하지.' },
+        ],
+      },
+    ],
+    interstitial: {
+      check_ports: [
+        { text: '', 'class': '' },
+        { text: 'Active Internet connections (only servers)', 'class': 'dim' },
+        { text: 'Proto Recv-Q Send-Q Local Address           Foreign Address         State', 'class': 'dim' },
+        { text: 'tcp        0      0 0.0.0.0:22              0.0.0.0:*               LISTEN', 'class': 'dim' },
+        { text: 'tcp        0      0 0.0.0.0:8080            0.0.0.0:*               LISTEN', 'class': 'dim' },
+        { text: '', 'class': '' },
+        { text: '[O.R.O.R.A] 비정상적인 외부 개방 포트 없음. 시스템 안전 상태.', 'class': 'success', delay: 300 },
+        { text: '', 'class': '' },
+        { text: '[O.R.O.R.A] 참고: netstat = 네트워크 연결 상태를 보여줍니다.', 'class': 'dim', speed: 12 },
+        { text: '[O.R.O.R.A] 참고: LISTEN = 외부 연결을 기다리는 상태. 뒷문이 열려있을 수 있다는 뜻입니다.', 'class': 'dim', speed: 12 },
+        { text: '', 'class': '' },
+      ],
+    },
+    success: [
+      { text: '[단장] 수고했다, {name}. 뒷문은 없군. 훈련 환경은 안전해.', 'class': 'commander', delay: 300 },
+      { text: '', 'class': '' },
+      { text: '[G-DECK] ── VR 훈련 종료 ──', 'class': 'system', delay: 500 },
+      { text: '[G-DECK] 훈련 결과: 전 항목 통과', 'class': 'success', delay: 300 },
+      { text: '', 'class': '' },
+      { text: '[단장] 좋아, {name}. 기본기는 충분하군.', 'class': 'commander', delay: 400 },
+      { text: '[단장] 이제 진짜 현장으로 간다. 긴장 풀지 마.', 'class': 'commander', delay: 400 },
+      { text: '', 'class': '' },
+      { text: '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'class': 'dim' },
+      { text: '  VR TRAINING COMPLETE — ENTERING LIVE OPERATION', 'class': 'ascii-art', delay: 500 },
+      { text: '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'class': 'dim' },
+      { text: '', 'class': '' },
+    ],
+    hints: [
+      { text: 'n으로 시작하는 명령어입니다. network + statistics의 줄임말이에요.' },
+      { text: 'netstat 뒤에 -tuln 옵션을 붙이면 열린 포트만 숫자로 보여줍니다.' },
+      { text: 'netstat -tuln을 입력하세요.' },
+    ],
+    next: 'stage_1',
+  },
 
   /* ══════════════════════════════════════════
    * MISSION 1: 로그 포렌식 - 침입 흔적 분석
@@ -21,6 +333,10 @@ WS.stages = [
       { text: '[단장] {name}, 본부 서버에 비정상적인 접근 시도가 감지됐다.', 'class': 'commander', delay: 300 },
       { text: '[단장] 인증 로그에 뭔가 잔뜩 쌓여있어. 실패한 로그인만 필터링해서 봐.', 'class': 'commander', delay: 300 },
       { text: '[단장] grep 명령어로 "Failed password" 기록만 추출해라.', 'class': 'commander', delay: 300 },
+      { text: '', 'class': '' },
+      { text: '[O.R.O.R.A] 용어 안내:', 'class': 'dim', speed: 12 },
+      { text: '[O.R.O.R.A] grep : 파일에서 특정 단어를 찾아주는 검색 도구입니다.', 'class': 'dim', speed: 12 },
+      { text: '[O.R.O.R.A] auth.log : 누가 언제 로그인했는지 기록하는 서버의 출입 일지입니다.', 'class': 'dim', speed: 12 },
       { text: '', 'class': '' },
     ],
     objective: [
@@ -63,6 +379,7 @@ WS.stages = [
         { text: '... (총 3,841건의 Failed password 기록)', 'class': 'system', speed: 8 },
         { text: '', 'class': '' },
         { text: '[경고] 브루트포스 공격 감지!', 'class': 'error', delay: 400 },
+        { text: '[O.R.O.R.A] 브루트포스 : 비밀번호를 하나씩 마구 대입해보는 무차별 공격 방식입니다.', 'class': 'dim', speed: 12 },
         { text: '[경고] 공격 출발지: 45.33.32.156 → root, admin 계정 대상', 'class': 'error', delay: 200 },
         { text: '[경고] 03:22:51 root 계정 로그인 성공 확인!', 'class': 'error', delay: 200 },
         { text: '', 'class': '' },
@@ -95,6 +412,10 @@ WS.stages = [
       { text: '', 'class': '' },
       { text: '[단장] 지금 열려있는 포트를 확인해봐, {name}.', 'class': 'commander', delay: 300 },
       { text: '[단장] 놈이 어떤 백도어를 열어놨는지 네트워크 상태를 스캔해라.', 'class': 'commander', delay: 300 },
+      { text: '', 'class': '' },
+      { text: '[O.R.O.R.A] 용어 안내:', 'class': 'dim', speed: 12 },
+      { text: '[O.R.O.R.A] 포트(Port) : 컴퓨터의 "문 번호"입니다. 웹은 80번, SSH는 22번 문을 씁니다.', 'class': 'dim', speed: 12 },
+      { text: '[O.R.O.R.A] 백도어 : 해커가 몰래 만든 "뒷문"으로, 언제든 다시 침입할 수 있게 합니다.', 'class': 'dim', speed: 12 },
       { text: '', 'class': '' },
     ],
     objective: [
@@ -155,6 +476,7 @@ WS.stages = [
         { text: '[경고] PID 6174 - 외부 IP로 연결된 의심 프로세스!', 'class': 'error', delay: 200 },
         { text: '', 'class': '' },
         { text: '[단장] 포트 4444... 리버스 셸의 전형적인 포트야.', 'class': 'commander', delay: 300 },
+        { text: '[O.R.O.R.A] 리버스 셸 : 해커가 원격으로 서버를 조종하는 프로그램입니다. 해커 PC에서 서버로 명령을 내릴 수 있습니다.', 'class': 'dim', speed: 12 },
         { text: '[단장] 저 포트를 누가 열어놨는지 추적해봐!', 'class': 'commander', delay: 300 },
         { text: '', 'class': '' },
       ],
@@ -166,6 +488,9 @@ WS.stages = [
         { text: '.r4tsh3ll  8752  root   3u  IPv4  TCP *:4444 (LISTEN)', 'class': 'error', speed: 8 },
         { text: '', 'class': '' },
         { text: '[경고] /tmp/.r4tsh3ll - 리버스 셸 백도어 확인! (PID: 8752)', 'class': 'error', delay: 300 },
+        { text: '', 'class': '' },
+        { text: '[O.R.O.R.A] ※ 바이너리 내부에 문자열이 포함되어 있습니다:', 'class': 'dim', delay: 200 },
+        { text: '  > "can\'t catch what you can\'t see. -- BW"', 'class': 'enemy', speed: 10 },
         { text: '', 'class': '' },
       ],
     },
@@ -196,6 +521,9 @@ WS.stages = [
       { text: '', 'class': '' },
       { text: '[단장] 공격자 IP 45.33.32.156을 방화벽에서 차단해라, {name}.', 'class': 'commander', delay: 300 },
       { text: '[단장] iptables로 해당 IP의 모든 인바운드 트래픽을 막아!', 'class': 'commander', delay: 300 },
+      { text: '', 'class': '' },
+      { text: '[O.R.O.R.A] iptables : 리눅스의 방화벽 도구입니다. 특정 IP의 접근을 허용하거나 차단합니다.', 'class': 'dim', speed: 12 },
+      { text: '[O.R.O.R.A] 인바운드 : 외부에서 서버로 들어오는 트래픽(데이터 흐름)을 말합니다.', 'class': 'dim', speed: 12 },
       { text: '', 'class': '' },
     ],
     objective: [
@@ -232,7 +560,7 @@ WS.stages = [
       ],
     },
     success: [
-      { text: '[단장] 좋아, {name}. 공격자의 접근 경로를 막았다.', 'class': 'commander', delay: 300 },
+      { text: '[단장] 차단 완료. 깔끔하게 막았다, {name}.', 'class': 'commander', delay: 300 },
       { text: '[단장] 하지만 이미 심어놓은 것들이 있을 거야. 정리하러 가자.', 'class': 'commander', delay: 400 },
       { text: '', 'class': '' },
       { text: '✓ 임무 3 완료: 공격자 IP 차단 성공', 'class': 'success', delay: 500 },
@@ -257,6 +585,9 @@ WS.stages = [
       { text: '', 'class': '' },
       { text: '[단장] 아까 발견한 리버스 셸 (PID 8752)을 즉시 제거해라!', 'class': 'commander', delay: 300 },
       { text: '[단장] 저놈이 살아있는 한 공격자가 원격으로 명령을 내릴 수 있어.', 'class': 'commander', delay: 300 },
+      { text: '', 'class': '' },
+      { text: '[O.R.O.R.A] PID : 프로세스 ID의 약자로, 실행 중인 프로그램마다 부여되는 고유 번호입니다.', 'class': 'dim', speed: 12 },
+      { text: '[O.R.O.R.A] kill -9 : 프로그램을 강제로 즉시 종료하는 명령입니다. 가장 강력한 종료 방법입니다.', 'class': 'dim', speed: 12 },
       { text: '', 'class': '' },
     ],
     objective: [
@@ -319,6 +650,9 @@ WS.stages = [
       { text: '', 'class': '' },
       { text: '[단장] 서버 CPU가 거의 100%야. 뭔가 자원을 잡아먹고 있어.', 'class': 'commander', delay: 300 },
       { text: '[단장] top 명령어로 실시간 자원 점유율을 확인해봐!', 'class': 'commander', delay: 300 },
+      { text: '', 'class': '' },
+      { text: '[O.R.O.R.A] 크립토마이너 : 남의 컴퓨터를 몰래 사용해 암호화폐를 채굴하는 악성 프로그램입니다.', 'class': 'dim', speed: 12 },
+      { text: '[O.R.O.R.A] top : 실시간으로 CPU, 메모리 사용량을 보여주는 시스템 모니터입니다.', 'class': 'dim', speed: 12 },
       { text: '', 'class': '' },
     ],
     objective: [
@@ -416,6 +750,8 @@ WS.stages = [
       { text: '[단장] 악성코드를 죽여도 1분마다 다시 살아나는 경우가 있어.', 'class': 'commander', delay: 300 },
       { text: '[단장] 예약된 작업(크론잡)을 확인해봐, {name}.', 'class': 'commander', delay: 300 },
       { text: '', 'class': '' },
+      { text: '[O.R.O.R.A] 크론잡(crontab) : 특정 시간마다 자동으로 명령을 실행하는 예약 시스템입니다. 스마트폰 알람처럼 동작합니다.', 'class': 'dim', speed: 12 },
+      { text: '', 'class': '' },
     ],
     objective: [
       { text: '┌─ 임무 목표 ──────────────────────────┐', 'class': 'objective' },
@@ -475,7 +811,7 @@ WS.stages = [
       ],
     },
     success: [
-      { text: '[단장] 좋아, 자동 부활 메커니즘을 끊었다.', 'class': 'commander', delay: 300 },
+      { text: '[단장] 되살아나는 꼬리를 잘랐다, {name}.', 'class': 'commander', delay: 300 },
       { text: '[단장] 이제 놈이 남긴 계정을 확인해볼 차례야.', 'class': 'commander', delay: 400 },
       { text: '', 'class': '' },
       { text: '✓ 임무 6 완료: 크론잡 지속성 제거 성공', 'class': 'success', delay: 500 },
@@ -500,6 +836,11 @@ WS.stages = [
       { text: '', 'class': '' },
       { text: '[단장] 해커들은 보통 재침입을 위한 계정을 몰래 만들어둬.', 'class': 'commander', delay: 300 },
       { text: '[단장] 시스템 계정 목록을 확인해서 수상한 놈이 없는지 봐, {name}.', 'class': 'commander', delay: 300 },
+      { text: '', 'class': '' },
+      { text: '[O.R.O.R.A] 용어 안내:', 'class': 'dim', speed: 12 },
+      { text: '[O.R.O.R.A] /etc/passwd : 시스템에 등록된 모든 사용자 계정 목록 파일입니다.', 'class': 'dim', speed: 12 },
+      { text: '[O.R.O.R.A] UID 0 : 리눅스 최고 관리자(root)의 고유 번호입니다. 이 번호를 가진 계정은 모든 권한을 갖습니다.', 'class': 'dim', speed: 12 },
+      { text: '[O.R.O.R.A] SUID : 일반 사용자가 실행해도 관리자 권한으로 동작하게 하는 특수 권한입니다.', 'class': 'dim', speed: 12 },
       { text: '', 'class': '' },
     ],
     objective: [
@@ -572,7 +913,11 @@ WS.stages = [
         { text: '', 'class': '' },
         { text: '[단장] UID 0... root와 동일한 권한의 계정을 만들어놨군.', 'class': 'commander', delay: 300 },
         { text: '[시스템] 유령 계정 support_admin 자동 삭제 처리 중...', 'class': 'system', delay: 300 },
-        { text: '[시스템] 계정 삭제 완료. 관련 홈 디렉토리도 정리됨.', 'class': 'system', delay: 200 },
+        { text: '[시스템] 계정 삭제 완료. 관련 홈 디렉토리 정리 중... 파일 발견:', 'class': 'system', delay: 200 },
+        { text: '', 'class': '' },
+        { text: '  /home/support_admin/.note:', 'class': 'dim', speed: 10 },
+        { text: '  "재미있는 서버군. 문 하나 닫으면 다른 문을 열지. -- Blackwing"', 'class': 'enemy', speed: 10 },
+        { text: '', 'class': '' },
         { text: '', 'class': '' },
         { text: '[단장] 좋아. 그런데 SUID 백도어도 확인해야 해.', 'class': 'commander', delay: 300 },
         { text: '[단장] SUID가 설정된 파일을 찾아봐. 일반 유저도 root 권한으로 실행되는 파일이야.', 'class': 'commander', delay: 300 },
@@ -603,7 +948,12 @@ WS.stages = [
     },
     success: [
       { text: '[단장] 유령 계정과 SUID 백도어까지 제거했다, {name}.', 'class': 'commander', delay: 300 },
-      { text: '[단장] 다음은 웹 서버 쪽이야. 웹셸이 심어져 있을 수도 있어.', 'class': 'commander', delay: 400 },
+      { text: '', 'class': '' },
+      { text: '[O.R.O.R.A] ※ 경고: 외부향 DNS 쿼리 미세 증가 감지 (평소 대비 +340%)', 'class': 'error', delay: 400 },
+      { text: '[O.R.O.R.A] 공격자가 우리의 대응을 실시간으로 감시하고 있을 가능성이 있습니다.', 'class': 'error', delay: 300 },
+      { text: '', 'class': '' },
+      { text: '[단장] ...놈이 우리를 지켜보고 있나? 긴장을 놓지 마, {name}.', 'class': 'commander', delay: 400 },
+      { text: '[단장] 속도를 높이자. 다음은 웹 서버 쪽이야. 웹셸이 심어져 있을 수도 있어.', 'class': 'commander', delay: 400 },
       { text: '', 'class': '' },
       { text: '✓ 임무 7 완료: 유령 계정 & 백도어 색출 성공', 'class': 'success', delay: 500 },
       { text: '', 'class': '' },
@@ -627,6 +977,8 @@ WS.stages = [
       { text: '', 'class': '' },
       { text: '[단장] 웹 서버 디렉토리에 최근 수정된 파일이 없는지 확인해봐.', 'class': 'commander', delay: 300 },
       { text: '[단장] 해커가 웹셸을 심어놨을 가능성이 높아, {name}.', 'class': 'commander', delay: 300 },
+      { text: '', 'class': '' },
+      { text: '[O.R.O.R.A] 웹셸(WebShell) : 웹사이트에 숨겨놓은 원격 조종 프로그램입니다. 브라우저로 서버 명령을 실행할 수 있게 합니다.', 'class': 'dim', speed: 12 },
       { text: '', 'class': '' },
     ],
     objective: [
@@ -690,10 +1042,13 @@ WS.stages = [
       ],
     },
     success: [
-      { text: '[단장] 웹셸까지 제거했다. 깔끔하군, {name}.', 'class': 'commander', delay: 300 },
-      { text: '[단장] 이제 근본적인 취약점을 막을 차례야. SSH 설정을 강화하자.', 'class': 'commander', delay: 400 },
+      { text: '[단장] 놈의 원격 조종 창구를 박살냈다, {name}.', 'class': 'commander', delay: 300 },
       { text: '', 'class': '' },
       { text: '✓ 임무 8 완료: 웹셸 제거 성공', 'class': 'success', delay: 500 },
+      { text: '', 'class': '' },
+      { text: '[O.R.O.R.A] ⚠ 새로운 경고: 내부 네트워크에서 비정상 아웃바운드 트래픽 감지', 'class': 'error', delay: 500 },
+      { text: '[단장] ...뭐? 내부망에서도 문제가 터졌어?', 'class': 'commander', delay: 300 },
+      { text: '[단장] SSH는 나중으로 미루자. 데이터 유출이 먼저다!', 'class': 'commander', delay: 400 },
       { text: '', 'class': '' },
     ],
     hints: [
@@ -701,21 +1056,391 @@ WS.stages = [
       '웹 디렉토리는 /var/www/html 입니다.',
       '1단계: find /var/www/html -mtime -1 | 2단계: rm /var/www/html/uploads/cmd.php',
     ],
+    next: 'stage_db1',
+  },
+
+  /* ══════════════════════════════════════════
+   * MISSION 9: 내부망 RAT 연결 탐지 (SKT 해킹 오마주)
+   * ══════════════════════════════════════════ */
+  {
+    id: 'stage_db1',
+    title: '임무 9: 내부망 RAT 연결 탐지',
+    briefing: [
+      { text: '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'class': 'dim' },
+      { text: '', 'class': '' },
+      { text: '[O.R.O.R.A] ██ 경고: 내부망 이상 트래픽 감지 ██', 'class': 'error', delay: 500 },
+      { text: '[O.R.O.R.A] 연구원 워크스테이션에서 해외 IP로의 지속적 아웃바운드 세션 발견', 'class': 'error', delay: 300 },
+      { text: '', 'class': '' },
+      { text: '[단장] {name}, 새로운 문제가 터졌다.', 'class': 'commander', delay: 300 },
+      { text: '[단장] 내부 PC 하나가 좀비가 된 것 같아. 외부의 수상한 IP로 몰래 연결을 유지하고 있어.', 'class': 'commander', delay: 300 },
+      { text: '[단장] ESTABLISHED 상태의 네트워크 세션을 확인해서 비정상 연결을 찾아내라!', 'class': 'commander', delay: 300 },
+      { text: '', 'class': '' },
+      { text: '[O.R.O.R.A] 용어 안내:', 'class': 'dim', speed: 12 },
+      { text: '[O.R.O.R.A] RAT(Remote Access Trojan) : 해커가 원격으로 PC를 조종하는 악성 프로그램입니다. 감염된 PC는 "좀비"가 됩니다.', 'class': 'dim', speed: 12 },
+      { text: '[O.R.O.R.A] ESTABLISHED : 현재 통신이 활성화되어 데이터를 주고받는 중인 상태입니다.', 'class': 'dim', speed: 12 },
+      { text: '', 'class': '' },
+    ],
+    objective: [
+      { text: '┌─ 임무 목표 ──────────────────────────────────────┐', 'class': 'objective' },
+      { text: '│ ESTABLISHED 상태의 네트워크 세션을 확인하여         │', 'class': 'objective' },
+      { text: '│ 비정상적인 외부 통신을 탐지하라                     │', 'class': 'objective' },
+      { text: '└───────────────────────────────────────────────────┘', 'class': 'objective' },
+      { text: '', 'class': '' },
+    ],
+    commands: [
+      {
+        id: 'netstat_established',
+        exact: 'netstat -anp | grep ESTABLISHED',
+        alts: [
+          'netstat -anp | grep ESTABLISHED',
+          'sudo netstat -anp | grep ESTABLISHED',
+          'netstat -anp|grep ESTABLISHED',
+          'ss -anp | grep ESTABLISHED',
+          'sudo ss -anp | grep ESTABLISHED',
+          'netstat -tnp | grep ESTABLISHED',
+          'sudo netstat -tnp | grep ESTABLISHED',
+        ],
+        keywords: ['netstat', 'established'],
+        pattern: '(sudo\\s+)?(netstat|ss)\\s+(-[tanpuw]+)\\s*\\|\\s*grep\\s+(ESTABLISHED|established)',
+        wrongFeedback: {
+          partial: 'netstat으로 네트워크 연결을 확인하되, ESTABLISHED 상태만 grep으로 필터링해봐.',
+        },
+      },
+    ],
+    interstitial: {
+      netstat_established: [
+        { text: '', 'class': '' },
+        { text: '[시스템] ESTABLISHED 세션 필터링 결과:', 'class': 'system', delay: 400 },
+        { text: '', 'class': '' },
+        { text: 'Proto  Local Address          Foreign Address        State       PID/Program', 'class': 'dim', speed: 8 },
+        { text: 'tcp    10.10.50.22:443        192.168.1.100:52341    ESTABLISHED 623/apache2', 'class': 'dim', speed: 8 },
+        { text: 'tcp    10.10.50.22:3306       192.168.1.100:52890    ESTABLISHED 891/mysqld', 'class': 'dim', speed: 8 },
+        { text: 'tcp    10.10.50.22:49152      112.85.99.10:443       ESTABLISHED 10933/update_agent.e', 'class': 'error', speed: 8 },
+        { text: '', 'class': '' },
+        { text: '[경고] PID 10933 "update_agent" → 외부 IP 112.85.99.10:443 연결 유지 중!', 'class': 'error', delay: 400 },
+        { text: '[O.R.O.R.A] 112.85.99.10은 미등록 해외 서버입니다. Blackwing C2 인프라와 연관 가능성 높음.', 'class': 'error', delay: 300 },
+        { text: '', 'class': '' },
+      ],
+    },
+    success: [
+      { text: '[단장] 잡았다, {name}. 정상 프로그램으로 위장한 RAT야.', 'class': 'commander', delay: 300 },
+      { text: '[단장] "update_agent"라니... 교묘하게 이름을 숨겼군. 즉시 제거해!', 'class': 'commander', delay: 400 },
+      { text: '', 'class': '' },
+      { text: '✓ 임무 9 완료: 내부망 RAT 연결 탐지 성공', 'class': 'success', delay: 500 },
+      { text: '', 'class': '' },
+    ],
+    hints: [
+      '네트워크 연결 상태를 보는 명령어: netstat -anp',
+      '활성 연결만 보려면 ESTABLISHED를 grep으로 필터링합니다.',
+      '정답: netstat -anp | grep ESTABLISHED',
+    ],
+    next: 'stage_db2',
+  },
+
+  /* ══════════════════════════════════════════
+   * MISSION 10: 위장 RAT 프로세스 제거
+   * ══════════════════════════════════════════ */
+  {
+    id: 'stage_db2',
+    title: '임무 10: 위장 RAT 프로세스 제거',
+    briefing: [
+      { text: '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'class': 'dim' },
+      { text: '', 'class': '' },
+      { text: '[단장] 놈이 우리 내부망을 실시간으로 탐색하고 있어!', 'class': 'commander', delay: 300 },
+      { text: '[단장] "update_agent"로 위장한 RAT 프로세스(PID 10933)를 즉시 종료해라!', 'class': 'commander', delay: 300 },
+      { text: '[단장] 더 이상 정보가 빠져나가게 놔둘 수 없어, {name}!', 'class': 'commander', delay: 300 },
+      { text: '', 'class': '' },
+    ],
+    objective: [
+      { text: '┌─ 임무 목표 ───────────────────────────────┐', 'class': 'objective' },
+      { text: '│ 위장 RAT 프로세스(PID 10933)를 강제 종료하라  │', 'class': 'objective' },
+      { text: '└────────────────────────────────────────────┘', 'class': 'objective' },
+      { text: '', 'class': '' },
+    ],
+    commands: [
+      {
+        id: 'kill_rat',
+        exact: 'kill -9 10933',
+        alts: [
+          'kill -9 10933', 'sudo kill -9 10933',
+          'kill -SIGKILL 10933', 'kill -KILL 10933',
+          'sudo kill -SIGKILL 10933',
+          'pkill -9 -f update_agent',
+          'sudo pkill -9 -f update_agent',
+          'killall -9 update_agent',
+        ],
+        keywords: ['kill', '-9', '10933'],
+        pattern: '(sudo\\s+)?kill\\s+(-9|-SIGKILL|-KILL)\\s+10933|(sudo\\s+)?(pkill|killall)\\s+(-9\\s+)?(-f\\s+)?update_agent',
+        wrongFeedback: {
+          partial: 'kill -9 [PID]로 강제 종료해. PID는 10933이야.',
+        },
+      },
+    ],
+    interstitial: {
+      kill_rat: [
+        { text: '', 'class': '' },
+        { text: '[시스템] SIGKILL 전송 중... PID 10933', 'class': 'system', delay: 400 },
+        { text: '[시스템] PID 10933 (update_agent) - 강제 종료 완료', 'class': 'system', delay: 200 },
+        { text: '[시스템] 원격 연결(112.85.99.10) 해제 확인', 'class': 'success', delay: 200 },
+        { text: '', 'class': '' },
+      ],
+    },
+    success: [
+      { text: '[단장] RAT를 처리했다, {name}. 원격 연결이 끊겼어.', 'class': 'commander', delay: 300 },
+      { text: '[단장] 그런데... 놈이 이미 데이터를 빼내고 있었을 수도 있어!', 'class': 'commander', delay: 300 },
+      { text: '[단장] /var/data 디렉토리를 확인해봐. 파일이 복사되거나 압축되고 있는지!', 'class': 'commander', delay: 400 },
+      { text: '', 'class': '' },
+      { text: '✓ 임무 10 완료: 위장 RAT 프로세스 제거 성공', 'class': 'success', delay: 500 },
+      { text: '', 'class': '' },
+    ],
+    hints: [
+      '프로세스 강제 종료: kill -9 [PID]',
+      'RAT 프로세스의 PID는 10933입니다.',
+      '정답: kill -9 10933',
+    ],
+    next: 'stage_db3',
+  },
+
+  /* ══════════════════════════════════════════
+   * MISSION 11: 정보 유출 상황 파악
+   * ══════════════════════════════════════════ */
+  {
+    id: 'stage_db3',
+    title: '임무 11: 정보 유출 상황 파악',
+    briefing: [
+      { text: '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'class': 'dim' },
+      { text: '', 'class': '' },
+      { text: '[단장] RAT은 죽였지만, 놈들이 이미 데이터 추출 스크립트를 돌려놨을 수 있어!', 'class': 'commander', delay: 300 },
+      { text: '[단장] /var/data/ 디렉토리에 요원들의 생체 정보 DB가 있거든.', 'class': 'commander', delay: 300 },
+      { text: '[단장] 최근 10분 내에 생성되거나 수정된 파일이 있는지 확인해, {name}!', 'class': 'commander', delay: 300 },
+      { text: '', 'class': '' },
+      { text: '[O.R.O.R.A] 정보 유출(Exfiltration) : 해커가 훔친 데이터를 외부로 빼돌리는 행위입니다.', 'class': 'dim', speed: 12 },
+      { text: '', 'class': '' },
+    ],
+    objective: [
+      { text: '┌─ 임무 목표 ────────────────────────────────────────┐', 'class': 'objective' },
+      { text: '│ /var/data 에서 최근 10분 내 생성/수정된 파일을 찾아라   │', 'class': 'objective' },
+      { text: '└─────────────────────────────────────────────────────┘', 'class': 'objective' },
+      { text: '', 'class': '' },
+    ],
+    commands: [
+      {
+        id: 'find_exfil',
+        exact: 'find /var/data -type f -mmin -10',
+        alts: [
+          'find /var/data -type f -mmin -10',
+          'sudo find /var/data -type f -mmin -10',
+          'find /var/data -mmin -10',
+          'sudo find /var/data -mmin -10',
+          'find /var/data -type f -mmin -10 -ls',
+          'find /var/data/ -type f -mmin -10',
+        ],
+        keywords: ['find', '/var/data', '-mmin'],
+        pattern: '(sudo\\s+)?find\\s+/var/data/?\\s+.*-mmin\\s+-10',
+        wrongFeedback: {
+          partial: 'find로 /var/data 디렉토리를 검색해봐. -mmin 옵션으로 시간 제한을 줄 수 있어.',
+        },
+      },
+    ],
+    interstitial: {
+      find_exfil: [
+        { text: '', 'class': '' },
+        { text: '[시스템] /var/data 최근 10분 내 수정 파일 검색 중...', 'class': 'system', delay: 500 },
+        { text: '', 'class': '' },
+        { text: '/var/data/agent_biometrics.csv', 'class': 'dim', speed: 8 },
+        { text: '/var/data/agent_biometrics_dump_temp.tar.gz', 'class': 'error', speed: 8 },
+        { text: '', 'class': '' },
+        { text: '[경고] 무단 압축 파일 발견: agent_biometrics_dump_temp.tar.gz', 'class': 'error', delay: 300 },
+        { text: '[경고] 파일 크기 증가 중... 현재 85% 진행 (추출 스크립트 가동 중!)', 'class': 'error', delay: 300 },
+        { text: '[경고] 원본 데이터: agent_biometrics.csv (요원 생체정보 DB - 평문 저장!)', 'class': 'error', delay: 300 },
+        { text: '', 'class': '' },
+      ],
+    },
+    success: [
+      { text: '[단장] 이런...! 놈들이 요원 생체정보를 빼내려 하고 있었어!', 'class': 'commander', delay: 300 },
+      { text: '[단장] 게다가 원본이 평문(암호화 안 된 상태)으로 저장되어 있다고?!', 'class': 'commander', delay: 300 },
+      { text: '[단장] 빠져나가기 전에 우리가 먼저 암호화해야 해! 서둘러, {name}!', 'class': 'commander', delay: 400 },
+      { text: '', 'class': '' },
+      { text: '✓ 임무 11 완료: 정보 유출 상황 파악 성공', 'class': 'success', delay: 500 },
+      { text: '', 'class': '' },
+    ],
+    hints: [
+      '최근 수정된 파일을 찾으려면 find 명령어의 -mmin 옵션을 씁니다.',
+      '-mmin -10 은 "10분 이내에 수정된" 파일을 의미합니다.',
+      '정답: find /var/data -type f -mmin -10',
+    ],
+    next: 'stage_db4',
+  },
+
+  /* ══════════════════════════════════════════
+   * MISSION 12: 개인정보 DB 긴급 암호화
+   * ══════════════════════════════════════════ */
+  {
+    id: 'stage_db4',
+    title: '임무 12: 개인정보 DB 긴급 암호화',
+    briefing: [
+      { text: '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'class': 'dim' },
+      { text: '', 'class': '' },
+      { text: '[단장] 원본 데이터가 평문(Plaintext)으로 저장되어 있었어!', 'class': 'commander', delay: 300 },
+      { text: '[단장] 해커의 추출 스크립트가 100% 완료되기 전에,', 'class': 'commander', delay: 300 },
+      { text: '[단장] 우리가 먼저 AES-256 암호화로 파일을 묶어버려야 해, {name}!', 'class': 'commander', delay: 300 },
+      { text: '[단장] openssl 명령어로 AES-256-CBC 방식으로 암호화해라!', 'class': 'commander', delay: 300 },
+      { text: '', 'class': '' },
+      { text: '[O.R.O.R.A] 용어 안내:', 'class': 'dim', speed: 12 },
+      { text: '[O.R.O.R.A] 평문(Plaintext) : 암호화되지 않은 원본 데이터. 누구나 읽을 수 있어 위험합니다.', 'class': 'dim', speed: 12 },
+      { text: '[O.R.O.R.A] AES-256 : 군사 등급의 초강력 암호 알고리즘입니다. 현재 가장 안전한 암호화 중 하나입니다.', 'class': 'dim', speed: 12 },
+      { text: '[O.R.O.R.A] openssl : 암호화, 인증서 관리 등을 수행하는 보안 도구입니다.', 'class': 'dim', speed: 12 },
+      { text: '', 'class': '' },
+    ],
+    objective: [
+      { text: '┌─ 임무 목표 ──────────────────────────────────────────┐', 'class': 'objective' },
+      { text: '│ 원본 DB를 AES-256-CBC로 암호화하라                     │', 'class': 'objective' },
+      { text: '│ 입력: /var/data/agent_biometrics.csv                  │', 'class': 'objective' },
+      { text: '│ 출력: /var/data/agent_biometrics.enc                  │', 'class': 'objective' },
+      { text: '└───────────────────────────────────────────────────────┘', 'class': 'objective' },
+      { text: '', 'class': '' },
+    ],
+    commands: [
+      {
+        id: 'openssl_encrypt',
+        exact: 'openssl enc -aes-256-cbc -salt -in /var/data/agent_biometrics.csv -out /var/data/agent_biometrics.enc',
+        alts: [
+          'openssl enc -aes-256-cbc -salt -in /var/data/agent_biometrics.csv -out /var/data/agent_biometrics.enc',
+          'sudo openssl enc -aes-256-cbc -salt -in /var/data/agent_biometrics.csv -out /var/data/agent_biometrics.enc',
+          'openssl enc -aes-256-cbc -in /var/data/agent_biometrics.csv -out /var/data/agent_biometrics.enc',
+          'openssl aes-256-cbc -salt -in /var/data/agent_biometrics.csv -out /var/data/agent_biometrics.enc',
+        ],
+        keywords: ['openssl', 'aes-256', 'agent_biometrics'],
+        pattern: '(sudo\\s+)?openssl\\s+(enc\\s+)?.*aes-256-cbc.*-in\\s+/var/data/agent_biometrics\\.csv.*-out\\s+/var/data/agent_biometrics\\.enc',
+        wrongFeedback: {
+          partial: 'openssl enc -aes-256-cbc 옵션을 사용해봐. 입력(-in)과 출력(-out) 경로를 확인해.',
+        },
+      },
+    ],
+    interstitial: {
+      openssl_encrypt: [
+        { text: '', 'class': '' },
+        { text: '[시스템] OpenSSL AES-256-CBC 암호화 실행 중...', 'class': 'system', delay: 400 },
+        { text: '', 'class': '' },
+        { text: 'enter aes-256-cbc encryption password: ********', 'class': 'dim', speed: 10 },
+        { text: 'Verifying - enter aes-256-cbc encryption password: ********', 'class': 'dim', speed: 10 },
+        { text: '', 'class': '' },
+        { text: '[시스템] 암호화 완료: agent_biometrics.csv → agent_biometrics.enc', 'class': 'success', delay: 300 },
+        { text: '[시스템] 알고리즘: AES-256-CBC | Salt 적용 | 군사 등급 암호화', 'class': 'success', delay: 200 },
+        { text: '', 'class': '' },
+      ],
+    },
+    success: [
+      { text: '[단장] 암호화 완료! 이제 이 파일은 암호 없이는 아무도 읽을 수 없어.', 'class': 'commander', delay: 300 },
+      { text: '[단장] 하지만 아직 끝이 아니야, {name}.', 'class': 'commander', delay: 300 },
+      { text: '[단장] 하드디스크에 남아있는 원본 평문 파일과 해커가 만들던 임시 파일을 완전히 삭제해야 해!', 'class': 'commander', delay: 400 },
+      { text: '', 'class': '' },
+      { text: '✓ 임무 12 완료: 개인정보 DB 긴급 암호화 성공', 'class': 'success', delay: 500 },
+      { text: '', 'class': '' },
+    ],
+    hints: [
+      'openssl 명령어로 파일을 암호화할 수 있습니다.',
+      'openssl enc -aes-256-cbc -salt -in [입력파일] -out [출력파일]',
+      '정답: openssl enc -aes-256-cbc -salt -in /var/data/agent_biometrics.csv -out /var/data/agent_biometrics.enc',
+    ],
+    next: 'stage_db5',
+  },
+
+  /* ══════════════════════════════════════════
+   * MISSION 13: 평문 데이터 영구 삭제
+   * ══════════════════════════════════════════ */
+  {
+    id: 'stage_db5',
+    title: '임무 13: 평문 데이터 영구 삭제',
+    briefing: [
+      { text: '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'class': 'dim' },
+      { text: '', 'class': '' },
+      { text: '[단장] 암호화된 파일은 안전해. 하지만 원본 평문 파일이 아직 디스크에 남아 있어!', 'class': 'commander', delay: 300 },
+      { text: '[단장] 단순히 rm으로 지우면 복구될 수 있어. shred 명령어로 완전히 분쇄해야 해!', 'class': 'commander', delay: 300 },
+      { text: '[단장] 원본 CSV 파일과 해커가 만들던 임시 압축 파일을 모두 영구 삭제해라, {name}!', 'class': 'commander', delay: 300 },
+      { text: '', 'class': '' },
+      { text: '[O.R.O.R.A] 용어 안내:', 'class': 'dim', speed: 12 },
+      { text: '[O.R.O.R.A] shred : 파일을 랜덤 데이터로 여러 번 덮어쓴 후 삭제하여, 복구 불가능하게 만드는 도구입니다.', 'class': 'dim', speed: 12 },
+      { text: '[O.R.O.R.A] rm vs shred : rm은 "목차만 지우기"(복구 가능), shred는 "내용까지 파쇄"(복구 불가)입니다.', 'class': 'dim', speed: 12 },
+      { text: '', 'class': '' },
+    ],
+    objective: [
+      { text: '┌─ 임무 목표 ─────────────────────────────────────────────────────┐', 'class': 'objective' },
+      { text: '│ 원본 평문 파일과 임시 압축 파일을 shred로 영구 삭제하라             │', 'class': 'objective' },
+      { text: '│ 대상: /var/data/agent_biometrics.csv, /var/data/*_temp.tar.gz   │', 'class': 'objective' },
+      { text: '└──────────────────────────────────────────────────────────────────┘', 'class': 'objective' },
+      { text: '', 'class': '' },
+    ],
+    commands: [
+      {
+        id: 'shred_files',
+        exact: 'shred -u -z -n 3 /var/data/agent_biometrics.csv /var/data/*_temp.tar.gz',
+        alts: [
+          'shred -u -z -n 3 /var/data/agent_biometrics.csv /var/data/*_temp.tar.gz',
+          'sudo shred -u -z -n 3 /var/data/agent_biometrics.csv /var/data/*_temp.tar.gz',
+          'shred -uzn3 /var/data/agent_biometrics.csv /var/data/*_temp.tar.gz',
+          'shred -u -z -n 3 /var/data/agent_biometrics.csv /var/data/agent_biometrics_dump_temp.tar.gz',
+          'sudo shred -u -z -n 3 /var/data/agent_biometrics.csv /var/data/agent_biometrics_dump_temp.tar.gz',
+          'shred -u -n 3 /var/data/agent_biometrics.csv /var/data/*_temp.tar.gz',
+        ],
+        keywords: ['shred', 'agent_biometrics'],
+        pattern: '(sudo\\s+)?shred\\s+.*-u.*agent_biometrics',
+        wrongFeedback: {
+          partial: 'shred 명령어에 -u(삭제), -z(제로 채움), -n(반복 횟수) 옵션을 사용해봐.',
+        },
+      },
+    ],
+    interstitial: {
+      shred_files: [
+        { text: '', 'class': '' },
+        { text: '[시스템] 파일 영구 삭제(shred) 실행 중...', 'class': 'system', delay: 400 },
+        { text: '', 'class': '' },
+        { text: 'shred: /var/data/agent_biometrics.csv: pass 1/3 (random)...', 'class': 'dim', speed: 10 },
+        { text: 'shred: /var/data/agent_biometrics.csv: pass 2/3 (random)...', 'class': 'dim', speed: 10 },
+        { text: 'shred: /var/data/agent_biometrics.csv: pass 3/3 (000000)...', 'class': 'dim', speed: 10 },
+        { text: 'shred: /var/data/agent_biometrics.csv: removed', 'class': 'success', speed: 10 },
+        { text: '', 'class': '' },
+        { text: 'shred: /var/data/agent_biometrics_dump_temp.tar.gz: pass 1/3...', 'class': 'dim', speed: 10 },
+        { text: 'shred: /var/data/agent_biometrics_dump_temp.tar.gz: removed', 'class': 'success', speed: 10 },
+        { text: '', 'class': '' },
+        { text: '[시스템] 모든 평문 파일 및 임시 파일 영구 삭제 완료', 'class': 'success', delay: 300 },
+        { text: '[시스템] 복구 불가능 상태 확인 - 디스크 잔존 데이터 제로화 완료', 'class': 'success', delay: 200 },
+        { text: '', 'class': '' },
+      ],
+    },
+    success: [
+      { text: '[단장] 완벽하다, {name}! 평문 데이터가 완전히 분쇄됐어.', 'class': 'commander', delay: 300 },
+      { text: '[단장] 놈들이 가져간 건 암호화된 껍데기뿐이야. 우리 요원들의 정보는 안전해.', 'class': 'commander', delay: 300 },
+      { text: '[O.R.O.R.A] 데이터 유출 대응 프로토콜 완료. 개인정보 보호 상태: 확보.', 'class': 'system', delay: 300 },
+      { text: '', 'class': '' },
+      { text: '[단장] 이제 근본적인 보안 강화로 넘어가자.', 'class': 'commander', delay: 400 },
+      { text: '', 'class': '' },
+      { text: '✓ 임무 13 완료: 평문 데이터 영구 삭제 성공', 'class': 'success', delay: 500 },
+      { text: '', 'class': '' },
+    ],
+    hints: [
+      'shred 명령어로 파일을 복구 불가능하게 삭제할 수 있습니다.',
+      '-u(삭제) -z(마지막에 0으로 채움) -n 3(3번 덮어쓰기)',
+      '정답: shred -u -z -n 3 /var/data/agent_biometrics.csv /var/data/*_temp.tar.gz',
+    ],
     next: 'stage_9',
   },
 
   /* ══════════════════════════════════════════
-   * MISSION 9: SSH 보안 강화
+   * MISSION 14: SSH 보안 강화
    * ══════════════════════════════════════════ */
   {
     id: 'stage_9',
-    title: '임무 9: SSH 보안 강화',
+    title: '임무 14: SSH 보안 강화',
     briefing: [
       { text: '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'class': 'dim' },
       { text: '', 'class': '' },
       { text: '[단장] 이번 공격의 시작은 SSH 브루트포스였어.', 'class': 'commander', delay: 300 },
       { text: '[단장] root 직접 로그인이 허용되어 있었던 게 원인이야.', 'class': 'commander', delay: 300 },
       { text: '[단장] SSH 설정 파일을 수정해서 root 로그인을 막아라, {name}.', 'class': 'commander', delay: 300 },
+      { text: '', 'class': '' },
+      { text: '[O.R.O.R.A] SSH : 원격 서버에 안전하게 접속하기 위한 암호화된 통신 방식입니다.', 'class': 'dim', speed: 12 },
+      { text: '[O.R.O.R.A] PermitRootLogin : root(최고 관리자)의 원격 로그인 허용 여부를 결정하는 설정입니다.', 'class': 'dim', speed: 12 },
       { text: '', 'class': '' },
     ],
     objective: [
@@ -802,7 +1527,7 @@ WS.stages = [
       { text: '[단장] 같은 방법으로는 다시는 못 들어와.', 'class': 'commander', delay: 300 },
       { text: '[단장] 마지막으로 한 가지만 더 하자. 놈의 정체를 밝혀내야 해.', 'class': 'commander', delay: 400 },
       { text: '', 'class': '' },
-      { text: '✓ 임무 9 완료: SSH 보안 강화 성공', 'class': 'success', delay: 500 },
+      { text: '✓ 임무 14 완료: SSH 보안 강화 성공', 'class': 'success', delay: 500 },
       { text: '', 'class': '' },
     ],
     hints: [
@@ -814,18 +1539,24 @@ WS.stages = [
   },
 
   /* ══════════════════════════════════════════
-   * MISSION 10: 포렌식 분석 & 암호 해독
+   * MISSION 15: 포렌식 분석 & 암호 해독
    * ══════════════════════════════════════════ */
   {
     id: 'stage_10',
-    title: '임무 10: 포렌식 분석',
+    title: '임무 15: 포렌식 분석',
     briefing: [
       { text: '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'class': 'dim' },
       { text: '', 'class': '' },
-      { text: '[단장] 마지막 임무다, {name}.', 'class': 'commander', delay: 300 },
+      { text: '[단장] 이제 놈의 정체를 밝혀낼 차례야, {name}.', 'class': 'commander', delay: 300 },
       { text: '[단장] 아까 제거한 리버스 셸 바이너리(/tmp/.r4tsh3ll)에서 정보를 추출하자.', 'class': 'commander', delay: 300 },
       { text: '[단장] strings 명령어로 바이너리 안의 문자열을 뽑아서 해커 그룹 시그니처를 찾아라.', 'class': 'commander', delay: 300 },
-      { text: '[단장] 정보원에 따르면 "Gashiga"라는 조직이 의심된다.', 'class': 'commander', delay: 300 },
+      { text: '[단장] 정보원에 따르면 "Blackwing"라는 조직이 의심된다.', 'class': 'commander', delay: 300 },
+      { text: '', 'class': '' },
+      { text: '[O.R.O.R.A] 용어 안내:', 'class': 'dim', speed: 12 },
+      { text: '[O.R.O.R.A] 포렌식(Forensic) : 디지털 증거를 수집·분석하여 공격의 흔적을 밝혀내는 수사 기법입니다.', 'class': 'dim', speed: 12 },
+      { text: '[O.R.O.R.A] strings : 실행 파일 속에 숨겨진 읽을 수 있는 텍스트를 추출하는 도구입니다.', 'class': 'dim', speed: 12 },
+      { text: '[O.R.O.R.A] Base64 : 데이터를 알파벳과 숫자만으로 표현하는 인코딩 방식입니다. 암호화가 아니라 "포장"에 가깝습니다.', 'class': 'dim', speed: 12 },
+      { text: '[O.R.O.R.A] C2 서버 : 해커가 감염된 컴퓨터에 명령을 내리는 원격 지휘소(Command & Control)입니다.', 'class': 'dim', speed: 12 },
       { text: '', 'class': '' },
     ],
     objective: [
@@ -838,16 +1569,16 @@ WS.stages = [
     commands: [
       {
         id: 'strings_grep',
-        exact: 'strings /tmp/.r4tsh3ll | grep Gashiga',
+        exact: 'strings /tmp/.r4tsh3ll | grep Blackwing',
         alts: [
-          'strings /tmp/.r4tsh3ll | grep Gashiga',
-          'strings /tmp/.r4tsh3ll | grep gashiga',
-          'strings /tmp/.r4tsh3ll | grep -i gashiga',
-          'sudo strings /tmp/.r4tsh3ll | grep Gashiga',
-          'strings /tmp/.r4tsh3ll | grep -i Gashiga',
+          'strings /tmp/.r4tsh3ll | grep Blackwing',
+          'strings /tmp/.r4tsh3ll | grep blackwing',
+          'strings /tmp/.r4tsh3ll | grep -i blackwing',
+          'sudo strings /tmp/.r4tsh3ll | grep Blackwing',
+          'strings /tmp/.r4tsh3ll | grep -i Blackwing',
         ],
-        keywords: ['strings', 'gashiga'],
-        pattern: '(sudo\\s+)?strings\\s+/tmp/\\.r4tsh3ll\\s*\\|\\s*grep\\s+(-i\\s+)?[Gg]ashiga',
+        keywords: ['strings', 'blackwing'],
+        pattern: '(sudo\\s+)?strings\\s+/tmp/\\.r4tsh3ll\\s*\\|\\s*grep\\s+(-i\\s+)?[Bb]lackwing',
         wrongFeedback: {
           partial: 'strings와 grep을 파이프(|)로 연결해서 사용해봐.',
         },
@@ -874,15 +1605,16 @@ WS.stages = [
         { text: '', 'class': '' },
         { text: '[시스템] 바이너리 문자열 추출 및 필터링 중...', 'class': 'system', delay: 500 },
         { text: '', 'class': '' },
-        { text: 'Gashiga_APT_Group_v2.1', 'class': 'error', speed: 8 },
-        { text: 'Gashiga_C2_beacon_interval=60', 'class': 'error', speed: 8 },
-        { text: 'Gashiga_next_target=TmV4dDogU0NBREE=', 'class': 'error', speed: 8 },
+        { text: 'Blackwing_APT_Group_v2.1', 'class': 'error', speed: 8 },
+        { text: 'Blackwing_C2_beacon_interval=60', 'class': 'error', speed: 8 },
+        { text: 'Blackwing_next_target=TmV4dDogU0NBREE=', 'class': 'error', speed: 8 },
+        { text: 'Blackwing_msg="이 파일을 찾았다면 이미 늦었다. 진짜 게임은 시작도 안 했어."', 'class': 'enemy', speed: 8 },
         { text: '', 'class': '' },
-        { text: '[경고] 해커 그룹 확인: Gashiga APT Group (버전 2.1)', 'class': 'error', delay: 400 },
+        { text: '[경고] 해커 그룹 확인: Blackwing APT Group (버전 2.1)', 'class': 'error', delay: 400 },
         { text: '[경고] C2 서버 비콘 주기: 60초', 'class': 'error', delay: 200 },
         { text: '[경고] 다음 타겟이 Base64로 인코딩되어 있음!', 'class': 'error', delay: 200 },
         { text: '', 'class': '' },
-        { text: '[단장] Gashiga... 드디어 꼬리가 잡혔군.', 'class': 'commander', delay: 300 },
+        { text: '[단장] Blackwing... 드디어 꼬리가 잡혔군.', 'class': 'commander', delay: 300 },
         { text: '[단장] 저 Base64 문자열을 해독해봐, {name}!', 'class': 'commander', delay: 300 },
         { text: '[단장] 문자열: TmV4dDogU0NBREE=', 'class': 'commander', delay: 300 },
         { text: '', 'class': '' },
@@ -902,27 +1634,27 @@ WS.stages = [
       { text: '[단장] 이건 큰 건이야. 이 정보를 상부에 즉시 보고하겠다.', 'class': 'commander', delay: 300 },
       { text: '[단장] {name}, 네가 해낸 거야. 대단하다.', 'class': 'commander', delay: 400 },
       { text: '', 'class': '' },
-      { text: '✓ 임무 10 완료: 포렌식 분석 성공', 'class': 'success', delay: 500 },
+      { text: '✓ 임무 15 완료: 포렌식 분석 성공', 'class': 'success', delay: 500 },
       { text: '', 'class': '' },
     ],
     hints: [
       'strings [파일] | grep [키워드] 로 바이너리에서 문자열을 검색할 수 있습니다.',
-      '1단계: strings /tmp/.r4tsh3ll | grep Gashiga',
+      '1단계: strings /tmp/.r4tsh3ll | grep Blackwing',
       '2단계: echo TmV4dDogU0NBREE= | base64 -d',
     ],
     next: 'stage_11',
   },
 
   /* ══════════════════════════════════════════
-   * MISSION 11: 해커 행적 역추적
+   * MISSION 16: 해커 행적 역추적
    * ══════════════════════════════════════════ */
   {
     id: 'stage_11',
-    title: '임무 11: 해커 행적 역추적',
+    title: '임무 16: 해커 행적 역추적',
     briefing: [
       { text: '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'class': 'dim' },
       { text: '', 'class': '' },
-      { text: '[단장] 좋아 {name}, 이제 놈이 서버에서 뭘 했는지 역추적하자.', 'class': 'commander', delay: 300 },
+      { text: '[단장] 계속 가자 {name}. 이제 놈이 서버에서 뭘 했는지 역추적할 차례야.', 'class': 'commander', delay: 300 },
       { text: '[단장] 먼저 로그인 실패 기록을 확인해서 공격 패턴을 분석해.', 'class': 'commander', delay: 300 },
       { text: '', 'class': '' },
     ],
@@ -996,7 +1728,7 @@ WS.stages = [
       { text: '[단장] 리버스 셸 다운로드 → 유령 계정 생성 → 크론잡 등록 → 마이너 설치 → SUID 백도어 → 웹셸...', 'class': 'commander', delay: 300 },
       { text: '[단장] 우리가 전부 다 찾아서 제거한 거야. 잘했다, {name}.', 'class': 'commander', delay: 400 },
       { text: '', 'class': '' },
-      { text: '✓ 임무 11 완료: 해커 행적 역추적 성공', 'class': 'success', delay: 500 },
+      { text: '✓ 임무 16 완료: 해커 행적 역추적 성공', 'class': 'success', delay: 500 },
       { text: '', 'class': '' },
     ],
     hints: [
@@ -1008,16 +1740,21 @@ WS.stages = [
   },
 
   /* ══════════════════════════════════════════
-   * MISSION 12: 패스워드 보안 강화
+   * MISSION 17: 패스워드 보안 강화
    * ══════════════════════════════════════════ */
   {
     id: 'stage_12',
-    title: '임무 12: 패스워드 보안 강화',
+    title: '임무 17: 패스워드 보안 강화',
     briefing: [
       { text: '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'class': 'dim' },
       { text: '', 'class': '' },
       { text: '[단장] 브루트포스로 뚫린 건 패스워드가 약했다는 뜻이기도 해.', 'class': 'commander', delay: 300 },
       { text: '[단장] shadow 파일에서 암호 해시 알고리즘을 확인하고, 패스워드 정책을 강화해, {name}.', 'class': 'commander', delay: 300 },
+      { text: '', 'class': '' },
+      { text: '[O.R.O.R.A] 용어 안내:', 'class': 'dim', speed: 12 },
+      { text: '[O.R.O.R.A] shadow 파일 : 사용자 비밀번호를 암호화하여 저장하는 보안 파일입니다.', 'class': 'dim', speed: 12 },
+      { text: '[O.R.O.R.A] 해시(Hash) : 비밀번호를 되돌릴 수 없는 암호문으로 변환한 것입니다. MD5는 너무 오래되어 쉽게 깨집니다.', 'class': 'dim', speed: 12 },
+      { text: '[O.R.O.R.A] chage : 패스워드 만료일, 최소 사용일 등의 정책을 설정하는 명령어입니다.', 'class': 'dim', speed: 12 },
       { text: '', 'class': '' },
     ],
     objective: [
@@ -1091,7 +1828,7 @@ WS.stages = [
       { text: '[단장] 패스워드 정책이 강화됐다. 이제 90일마다 변경이 필수야.', 'class': 'commander', delay: 300 },
       { text: '[단장] 다음은 서버 전체 취약점 스캔을 해보자.', 'class': 'commander', delay: 400 },
       { text: '', 'class': '' },
-      { text: '✓ 임무 12 완료: 패스워드 보안 강화 성공', 'class': 'success', delay: 500 },
+      { text: '✓ 임무 17 완료: 패스워드 보안 강화 성공', 'class': 'success', delay: 500 },
       { text: '', 'class': '' },
     ],
     hints: [
@@ -1103,17 +1840,21 @@ WS.stages = [
   },
 
   /* ══════════════════════════════════════════
-   * MISSION 13: 취약점 스캔
+   * MISSION 18: 취약점 스캔
    * ══════════════════════════════════════════ */
   {
     id: 'stage_13',
-    title: '임무 13: 취약점 스캔',
+    title: '임무 18: 취약점 스캔',
     briefing: [
       { text: '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'class': 'dim' },
       { text: '', 'class': '' },
       { text: '[단장] 정리가 거의 끝났어. 하지만 확인이 필요하다, {name}.', 'class': 'commander', delay: 300 },
       { text: '[단장] nmap으로 우리 서버(10.0.0.5)를 스캔해서 불필요하게 열린 포트가 없는지 점검해.', 'class': 'commander', delay: 300 },
       { text: '[단장] SYN 스텔스 스캔으로 1-1024 포트를 확인해봐.', 'class': 'commander', delay: 300 },
+      { text: '', 'class': '' },
+      { text: '[O.R.O.R.A] nmap : 네트워크에 열린 포트(문)를 자동으로 찾아주는 스캐너입니다.', 'class': 'dim', speed: 12 },
+      { text: '[O.R.O.R.A] SYN 스캔 : 상대가 눈치채기 어렵게 조용히 포트를 확인하는 스텔스 방법입니다.', 'class': 'dim', speed: 12 },
+      { text: '[O.R.O.R.A] 웰노운 포트 : 1~1024번까지의 잘 알려진 서비스 전용 포트 번호입니다. (SSH=22, HTTP=80 등)', 'class': 'dim', speed: 12 },
       { text: '', 'class': '' },
     ],
     objective: [
@@ -1164,7 +1905,7 @@ WS.stages = [
       { text: '[단장] 깨끗하다. 백도어 포트가 완전히 사라졌어.', 'class': 'commander', delay: 300 },
       { text: '[단장] 마지막으로 중요 파일을 잠그고 감시 체계를 세우자.', 'class': 'commander', delay: 400 },
       { text: '', 'class': '' },
-      { text: '✓ 임무 13 완료: 취약점 스캔 성공', 'class': 'success', delay: 500 },
+      { text: '✓ 임무 18 완료: 취약점 스캔 성공', 'class': 'success', delay: 500 },
       { text: '', 'class': '' },
     ],
     hints: [
@@ -1176,16 +1917,19 @@ WS.stages = [
   },
 
   /* ══════════════════════════════════════════
-   * MISSION 14: 최종 시스템 잠금
+   * MISSION 19: 최종 시스템 잠금
    * ══════════════════════════════════════════ */
   {
     id: 'stage_14',
-    title: '임무 14: 최종 시스템 잠금',
+    title: '임무 19: 최종 시스템 잠금',
     briefing: [
       { text: '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'class': 'dim' },
       { text: '', 'class': '' },
       { text: '[단장] 마지막 임무다, {name}. 두 번 다시 뚫리지 않도록 잠그자.', 'class': 'commander', delay: 300 },
       { text: '[단장] 핵심 파일에 불변(Immutable) 속성을 걸고, 파일 변조 감시를 설정해.', 'class': 'commander', delay: 300 },
+      { text: '', 'class': '' },
+      { text: '[O.R.O.R.A] chattr +i : 파일을 "잠금" 상태로 만듭니다. root 관리자도 수정이나 삭제를 할 수 없게 됩니다.', 'class': 'dim', speed: 12 },
+      { text: '[O.R.O.R.A] auditctl : 파일이 변경될 때마다 자동으로 기록하는 감시 카메라 같은 도구입니다.', 'class': 'dim', speed: 12 },
       { text: '', 'class': '' },
     ],
     objective: [
@@ -1248,10 +1992,11 @@ WS.stages = [
       ],
     },
     success: [
-      { text: '[단장] 완벽하다, {name}. 시스템이 철벽 방어 태세에 들어갔다.', 'class': 'commander', delay: 300 },
-      { text: '[단장] 이제 정말... 잠깐.', 'class': 'commander', delay: 600 },
+      { text: '[단장] 시스템이 철벽 방어 태세에 들어갔다, {name}.', 'class': 'commander', delay: 300 },
+      { text: '[단장] 드디어 끝...... 잠깐.', 'class': 'commander', delay: 600 },
+      { text: '[O.R.O.R.A] ████ 비정상 트래픽 폭증 감지 - OT 네트워크 ████', 'class': 'error', delay: 400 },
       { text: '', 'class': '' },
-      { text: '✓ 임무 14 완료: 최종 시스템 잠금 성공', 'class': 'success', delay: 500 },
+      { text: '✓ 임무 19 완료: 최종 시스템 잠금 성공', 'class': 'success', delay: 500 },
       { text: '', 'class': '' },
     ],
     hints: [
@@ -1289,25 +2034,31 @@ WS.stages = [
       { text: '  ╚═╝╚═╝  ╚═╝ ╚═════╝ ╚═╝  ╚═══╝ ╚═════╝╚══════╝╚═╝  ╚═╝╚═════╝ ', 'class': 'error', speed: 5 },
       { text: '', 'class': '', delay: 800 },
       { text: '[O.R.O.R.A] ████ 전투로봇 조립 공장 SCADA 비상 ████', 'class': 'error', delay: 500 },
-      { text: '[O.R.O.R.A] Gashiga APT Group - OT 네트워크 침투 확인', 'class': 'error', delay: 300 },
+      { text: '[O.R.O.R.A] Blackwing APT Group - OT 네트워크 침투 확인', 'class': 'error', delay: 300 },
       { text: '[O.R.O.R.A] 타이탄 메인프레임(Titan Mainframe) 이상 징후 감지', 'class': 'error', delay: 300 },
       { text: '[G-DECK] 타겟 전환: TITAN MAINFRAME → 적대적 상태', 'class': 'system', delay: 300 },
+      { text: '', 'class': '' },
+      { text: '[TITAN] ▓▓ 외부 메시지 수신 ▓▓', 'class': 'error', delay: 500 },
+      { text: '', 'class': '' },
+      { text: '[???] ...거기 있는 거 다 보여, 꼬마 요원.', 'class': 'enemy', delay: 400 },
+      { text: '[???] 서버 몇 대 청소한 게 자랑이야? 귀엽군.', 'class': 'enemy', delay: 300 },
+      { text: '[???] 여기는 차원이 달라. 강철이 녹는 온도를 알아?', 'class': 'enemy', delay: 300 },
+      { text: '[???] 이 공장이 멈추면 어떻게 되는지... 직접 보여줄게.', 'class': 'enemy', delay: 300 },
+      { text: '[???]                              -- Blackwing', 'class': 'enemy', delay: 500 },
+      { text: '', 'class': '' },
+      { text: '[G-DECK] 메시지 출처: 10.99.99.5 (OT 네트워크 미등록 장비)', 'class': 'system', delay: 200 },
       { text: '', 'class': '' },
       { text: '[단장] ...{name}, 들리나? O.R.O.R.A를 통해 긴급 통신한다.', 'class': 'commander', delay: 600 },
       { text: '[단장] 아직 긴장을 풀 때가 아니었어.', 'class': 'commander', delay: 400 },
       { text: '[단장] 포렌식에서 발견한 SCADA 공격 계획... 이미 실행에 옮겨졌다.', 'class': 'commander', delay: 400 },
       { text: '', 'class': '' },
       { text: '[단장] 대상은 우리 전투로봇 조립 공장의 타이탄 메인프레임이야.', 'class': 'commander', delay: 300 },
+      { text: '[O.R.O.R.A] 분석: Blackwing이 IT 네트워크 경계 장비를 통해 OT망으로 피봇한 것으로 확인됩니다.', 'class': 'system', delay: 300 },
       { text: '[단장] 공장 심장부 - 폐쇄망으로 격리된 OT 제어 시스템.', 'class': 'commander', delay: 300 },
       { text: '[단장] 놈들이 PLC를 Modbus로 조작하고, HMI를 변조해서', 'class': 'commander', delay: 300 },
       { text: '[단장] 운영자들은 "모든 시스템 정상"으로 보고 있어.', 'class': 'commander', delay: 300 },
       { text: '', 'class': '' },
-      { text: '[O.R.O.R.A] ─── 용어 해설 ───', 'class': 'dim', speed: 15, delay: 200 },
-      { text: '[O.R.O.R.A] SCADA : 공장·발전소를 원격으로 감시·제어하는 시스템', 'class': 'dim', speed: 12 },
-      { text: '[O.R.O.R.A] PLC  : 로봇팔·밸브 등 기계를 직접 제어하는 산업용 컴퓨터', 'class': 'dim', speed: 12 },
-      { text: '[O.R.O.R.A] HMI  : 운영자가 공장 상태를 보는 모니터/대시보드 화면', 'class': 'dim', speed: 12 },
-      { text: '[O.R.O.R.A] Modbus: PLC와 통신하는 산업용 프로토콜 (TCP 포트 502)', 'class': 'dim', speed: 12 },
-      { text: '[O.R.O.R.A] ──────────────', 'class': 'dim', speed: 15 },
+      { text: '[O.R.O.R.A] SCADA란? 공장·발전소를 원격으로 감시·제어하는 산업 시스템입니다.', 'class': 'dim', speed: 12 },
       { text: '', 'class': '' },
       { text: '[단장] 놈들의 최종 목표는 플라즈마 코어 과열로 공장 전체를 날리는 거야.', 'class': 'commander', delay: 400 },
       { text: '', 'class': '' },
@@ -1333,11 +2084,11 @@ WS.stages = [
   },
 
   /* ══════════════════════════════════════════
-   * MISSION 15: Modbus 트래픽 캡처
+   * MISSION 20: Modbus 트래픽 캡처
    * ══════════════════════════════════════════ */
   {
     id: 'stage_15',
-    title: '임무 15: Modbus 트래픽 캡처',
+    title: '임무 20: Modbus 트래픽 캡처',
     briefing: [
       { text: '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'class': 'dim' },
       { text: '', 'class': '' },
@@ -1345,6 +2096,10 @@ WS.stages = [
       { text: '[단장] 놈들이 Modbus 프로토콜(TCP 502)을 통해 PLC를 조작 중이야.', 'class': 'commander', delay: 300 },
       { text: '[단장] 먼저 OT 전용 인터페이스(eth1)에서 Modbus 트래픽을 캡처해야 해.', 'class': 'commander', delay: 300 },
       { text: '[단장] tcpdump로 포트 502 트래픽을 pcap 파일로 저장해라.', 'class': 'commander', delay: 300 },
+      { text: '', 'class': '' },
+      { text: '[O.R.O.R.A] Modbus : PLC(기계 제어 컴퓨터)와 통신하는 산업용 프로토콜입니다. TCP 포트 502를 사용합니다.', 'class': 'dim', speed: 12 },
+      { text: '[O.R.O.R.A] tcpdump : 네트워크를 흐르는 데이터(패킷)를 실시간으로 엿보고 저장하는 도구입니다.', 'class': 'dim', speed: 12 },
+      { text: '[O.R.O.R.A] pcap : 캡처한 네트워크 패킷을 저장하는 파일 형식입니다.', 'class': 'dim', speed: 12 },
       { text: '', 'class': '' },
     ],
     objective: [
@@ -1402,9 +2157,10 @@ WS.stages = [
     success: [
       { text: '[단장] 확인했다, {name}. 놈들이 PLC 레지스터를 직접 조작하고 있어.', 'class': 'commander', delay: 300 },
       { text: '[단장] 비상정지까지 꺼버렸다니... 이건 Stuxnet급 공격이야.', 'class': 'commander', delay: 300 },
+      { text: '[O.R.O.R.A] Stuxnet : 2010년 이란 핵시설을 파괴한 역사상 최초의 산업시설 대상 사이버 무기입니다.', 'class': 'dim', speed: 12 },
       { text: '[단장] 다음은 HMI 대시보드를 확인해야 해. 운영자들이 속고 있을 수 있어.', 'class': 'commander', delay: 400 },
       { text: '', 'class': '' },
-      { text: '✓ 임무 15 완료: Modbus 트래픽 캡처 성공', 'class': 'success', delay: 500 },
+      { text: '✓ 임무 20 완료: Modbus 트래픽 캡처 성공', 'class': 'success', delay: 500 },
       { text: '', 'class': '' },
     ],
     hints: [
@@ -1416,11 +2172,11 @@ WS.stages = [
   },
 
   /* ══════════════════════════════════════════
-   * MISSION 16: HMI 무결성 검증
+   * MISSION 21: HMI 무결성 검증
    * ══════════════════════════════════════════ */
   {
     id: 'stage_16',
-    title: '임무 16: HMI 무결성 검증',
+    title: '임무 21: HMI 무결성 검증',
     briefing: [
       { text: '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'class': 'dim' },
       { text: '', 'class': '' },
@@ -1428,6 +2184,10 @@ WS.stages = [
       { text: '[단장] 하지만 PLC 레지스터는 이미 조작된 상태야.', 'class': 'commander', delay: 300 },
       { text: '[단장] HMI 대시보드 프로그램 자체가 변조됐을 가능성이 높아.', 'class': 'commander', delay: 300 },
       { text: '[단장] sha256sum으로 HMI 바이너리의 해시를 확인해봐.', 'class': 'commander', delay: 300 },
+      { text: '', 'class': '' },
+      { text: '[O.R.O.R.A] HMI : 운영자가 공장 상태를 보는 모니터/대시보드 화면입니다. 이 화면이 변조되면 운영자는 거짓 정보를 보게 됩니다.', 'class': 'dim', speed: 12 },
+      { text: '[O.R.O.R.A] sha256sum : 파일의 "디지털 지문"을 계산하는 도구입니다. 파일이 조금이라도 바뀌면 지문이 완전히 달라집니다.', 'class': 'dim', speed: 12 },
+      { text: '[O.R.O.R.A] 무결성 검증 : 파일이 원본 그대로인지 변조되지 않았는지 확인하는 작업입니다.', 'class': 'dim', speed: 12 },
       { text: '', 'class': '' },
     ],
     objective: [
@@ -1476,10 +2236,10 @@ WS.stages = [
       ],
     },
     success: [
-      { text: '[단장] 좋아, {name}. HMI 변조를 증명했다.', 'class': 'commander', delay: 300 },
+      { text: '[단장] 결정적 증거다, {name}. HMI 변조를 확인했다.', 'class': 'commander', delay: 300 },
       { text: '[단장] 이제 PLC에 올라간 변조 펌웨어를 원본으로 복구해야 해.', 'class': 'commander', delay: 400 },
       { text: '', 'class': '' },
-      { text: '✓ 임무 16 완료: HMI 무결성 검증 성공', 'class': 'success', delay: 500 },
+      { text: '✓ 임무 21 완료: HMI 무결성 검증 성공', 'class': 'success', delay: 500 },
       { text: '', 'class': '' },
     ],
     hints: [
@@ -1491,11 +2251,11 @@ WS.stages = [
   },
 
   /* ══════════════════════════════════════════
-   * MISSION 17: 펌웨어 롤백
+   * MISSION 22: 펌웨어 롤백
    * ══════════════════════════════════════════ */
   {
     id: 'stage_17',
-    title: '임무 17: 펌웨어 롤백',
+    title: '임무 22: 펌웨어 롤백',
     briefing: [
       { text: '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'class': 'dim' },
       { text: '', 'class': '' },
@@ -1503,6 +2263,11 @@ WS.stages = [
       { text: '[단장] 다행히 오프라인 백업 드라이브에 원본 펌웨어가 있어.', 'class': 'commander', delay: 300 },
       { text: '[단장] TFTP 서버 디렉토리에 원본 펌웨어를 강제 복사해서 롤백해라.', 'class': 'commander', delay: 300 },
       { text: '[단장] 기존 파일을 덮어써야 하니 -f 옵션을 잊지 마.', 'class': 'commander', delay: 300 },
+      { text: '', 'class': '' },
+      { text: '[O.R.O.R.A] PLC : 로봇팔·밸브 등 기계를 직접 제어하는 산업용 컴퓨터입니다.', 'class': 'dim', speed: 12 },
+      { text: '[O.R.O.R.A] 펌웨어 : PLC 내부에 설치된 제어 프로그램입니다. "기계의 두뇌"라고 할 수 있습니다.', 'class': 'dim', speed: 12 },
+      { text: '[O.R.O.R.A] TFTP : 네트워크를 통해 펌웨어 파일을 장치에 전송하는 간단한 파일 전송 방식입니다.', 'class': 'dim', speed: 12 },
+      { text: '[O.R.O.R.A] 롤백(Rollback) : 변조된 현재 버전을 원래 정상 버전으로 되돌리는 작업입니다.', 'class': 'dim', speed: 12 },
       { text: '', 'class': '' },
     ],
     objective: [
@@ -1549,11 +2314,11 @@ WS.stages = [
       ],
     },
     success: [
-      { text: '[단장] 좋아, {name}! 펌웨어 원본 복원 완료.', 'class': 'commander', delay: 300 },
+      { text: '[단장] 원본 복원 성공! 잘 해냈다, {name}.', 'class': 'commander', delay: 300 },
       { text: '[단장] 하지만 아직 끝이 아니야. 놈들의 C2 서버가 아직 연결돼 있어.', 'class': 'commander', delay: 300 },
       { text: '[단장] OT 네트워크에서 공격자의 경로를 완전히 끊어야 해.', 'class': 'commander', delay: 400 },
       { text: '', 'class': '' },
-      { text: '✓ 임무 17 완료: 펌웨어 롤백 성공', 'class': 'success', delay: 500 },
+      { text: '✓ 임무 22 완료: 펌웨어 롤백 성공', 'class': 'success', delay: 500 },
       { text: '', 'class': '' },
     ],
     hints: [
@@ -1565,11 +2330,11 @@ WS.stages = [
   },
 
   /* ══════════════════════════════════════════
-   * MISSION 18: OT 네트워크 격리
+   * MISSION 23: OT 네트워크 격리
    * ══════════════════════════════════════════ */
   {
     id: 'stage_18',
-    title: '임무 18: OT 네트워크 격리',
+    title: '임무 23: OT 네트워크 격리',
     briefing: [
       { text: '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'class': 'dim' },
       { text: '', 'class': '' },
@@ -1577,6 +2342,8 @@ WS.stages = [
       { text: '[단장] 이 네트워크 대역으로의 라우팅을 완전히 제거해서', 'class': 'commander', delay: 300 },
       { text: '[단장] 공격자의 명령 채널을 물리적으로 끊어버려야 해.', 'class': 'commander', delay: 300 },
       { text: '[단장] route del 명령으로 해당 대역을 라우팅 테이블에서 삭제해라.', 'class': 'commander', delay: 300 },
+      { text: '', 'class': '' },
+      { text: '[O.R.O.R.A] 라우팅 테이블 : 데이터가 어디로 가야 하는지 적힌 "길 안내 지도"입니다. 경로를 삭제하면 해당 목적지와 통신이 끊깁니다.', 'class': 'dim', speed: 12 },
       { text: '', 'class': '' },
     ],
     objective: [
@@ -1627,8 +2394,13 @@ WS.stages = [
       ],
     },
     success: [
-      { text: '[단장] 좋아, {name}! 놈들의 명령 채널을 완전히 끊었다.', 'class': 'commander', delay: 300 },
-      { text: '[단장] 하지만... 잠깐. 긴급 알람이 울리고 있어!', 'class': 'commander', delay: 400 },
+      { text: '[단장] 놈들의 명령 줄을 끊어냈다, {name}!', 'class': 'commander', delay: 300 },
+      { text: '[단장] 하지만... 잠깐.', 'class': 'commander', delay: 400 },
+      { text: '', 'class': '' },
+      { text: '[TITAN] ▓▓ 차단 직전 수신된 메시지 ▓▓', 'class': 'error', delay: 400 },
+      { text: '[Blackwing] 하하, 줄을 끊으면 끝날 줄 알아?', 'class': 'enemy', delay: 300 },
+      { text: '[Blackwing] 이미 선물은 심어뒀어. 카운트다운은 시작됐다.', 'class': 'enemy', delay: 300 },
+      { text: '[Blackwing] 즐거운 시간 보내라, {name}. 다시 만나자.', 'class': 'enemy', delay: 500 },
       { text: '', 'class': '' },
       { text: '[경고] ████ 플라즈마 코어 온도 이상 ████', 'class': 'error', delay: 500 },
       { text: '[경고] 현재 온도: 2,847°C (정상: 800°C)', 'class': 'error', delay: 300 },
@@ -1637,7 +2409,7 @@ WS.stages = [
       { text: '[단장] 이런... 놈들이 C2가 끊기기 전에 마지막 명령을 보냈어!', 'class': 'commander', delay: 400 },
       { text: '[단장] 냉각 밸브 제어 프로세스가 잠겨있다! 빨리 찾아서 죽여!', 'class': 'commander', delay: 300 },
       { text: '', 'class': '' },
-      { text: '✓ 임무 18 완료: OT 네트워크 격리 성공', 'class': 'success', delay: 500 },
+      { text: '✓ 임무 23 완료: OT 네트워크 격리 성공', 'class': 'success', delay: 500 },
       { text: '', 'class': '' },
     ],
     hints: [
@@ -1649,11 +2421,11 @@ WS.stages = [
   },
 
   /* ══════════════════════════════════════════
-   * MISSION 19: 비상 냉각 밸브 복구
+   * MISSION 24: 비상 냉각 밸브 복구
    * ══════════════════════════════════════════ */
   {
     id: 'stage_19',
-    title: '임무 19: 비상 냉각 밸브 복구',
+    title: '임무 24: 비상 냉각 밸브 복구',
     briefing: [
       { text: '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'class': 'dim' },
       { text: '', 'class': '' },
@@ -1720,11 +2492,15 @@ WS.stages = [
         { text: '[시스템] 프로세스 검색 중...', 'class': 'system', delay: 400 },
         { text: '', 'class': '' },
         { text: 'UID        PID  PPID  C STIME TTY          TIME CMD', 'class': 'dim', speed: 8 },
-        { text: 'root      7782     1 99 22:17 ?        00:47:23 /tmp/.gashiga/coolant_valve --lock --no-release', 'class': 'error', speed: 6 },
+        { text: 'root      7782     1 99 22:17 ?        00:47:23 /tmp/.blackwing/coolant_valve --lock --no-release', 'class': 'error', speed: 6 },
         { text: '', 'class': '' },
         { text: '[경고] 냉각 밸브 잠금 프로세스 식별!', 'class': 'error', delay: 300 },
-        { text: '[경고] PID: 7782 | 경로: /tmp/.gashiga/coolant_valve', 'class': 'error', delay: 200 },
+        { text: '[경고] PID: 7782 | 경로: /tmp/.blackwing/coolant_valve', 'class': 'error', delay: 200 },
         { text: '[경고] 옵션: --lock --no-release (강제 잠금 + 해제 방지)', 'class': 'error', delay: 200 },
+        { text: '', 'class': '' },
+        { text: '[O.R.O.R.A] 프로세스 내부 문자열 감지:', 'class': 'dim', delay: 200 },
+        { text: '  "마지막 선물이다. 이걸 못 풀면 넌 끝이야. -- BW"', 'class': 'enemy', speed: 10 },
+        { text: '', 'class': '' },
         { text: '[경고] 플라즈마 코어 온도: 2,943°C ▲▲▲', 'class': 'error', delay: 300 },
         { text: '', 'class': '' },
         { text: '[단장] 찾았다! PID 7782! 즉시 kill -9로 강제 종료해!', 'class': 'commander', delay: 300 },
@@ -1758,7 +2534,7 @@ WS.stages = [
       { text: '[단장] 3,000도까지 불과 29도 차이... 아슬아슬했다.', 'class': 'commander', delay: 400 },
       { text: '[단장] 네가 아니었으면 공장이 통째로 날아갈 뻔했어.', 'class': 'commander', delay: 400 },
       { text: '', 'class': '' },
-      { text: '✓ 임무 19 완료: 비상 냉각 밸브 복구 성공', 'class': 'success', delay: 500 },
+      { text: '✓ 임무 24 완료: 비상 냉각 밸브 복구 성공', 'class': 'success', delay: 500 },
       { text: '', 'class': '' },
     ],
     hints: [
@@ -1770,12 +2546,12 @@ WS.stages = [
   },
 
   /* ══════════════════════════════════════════
-   * MISSION 20: DDoS 방어 - O.R.O.R.A 통신 보호
+   * MISSION 25: DDoS 방어 - O.R.O.R.A 통신 보호
    * (PDF: DDoS 55.5% 급증, DNS Query Flooding 71%, 성동격서 전략)
    * ══════════════════════════════════════════ */
   {
     id: 'stage_20',
-    title: '임무 20: DDoS 방어 - O.R.O.R.A 통신 보호',
+    title: '임무 25: DDoS 방어 - O.R.O.R.A 통신 보호',
     briefing: [
       { text: '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'class': 'dim' },
       { text: '', 'class': '' },
@@ -1790,6 +2566,11 @@ WS.stages = [
       { text: '', 'class': '' },
       { text: '[O.R.O.R.A] DDoS 유형 분석: DNS Query Flooding (전체 71%)', 'class': 'system', delay: 200 },
       { text: '[O.R.O.R.A] 2025 KISA 보고서: DDoS 공격 전년 대비 55.5% 급증', 'class': 'dim', delay: 200 },
+      { text: '', 'class': '' },
+      { text: '[O.R.O.R.A] 용어 안내:', 'class': 'dim', speed: 12 },
+      { text: '[O.R.O.R.A] DDoS : 수천~수만 대의 컴퓨터가 동시에 접속 요청을 보내 서버를 마비시키는 공격입니다.', 'class': 'dim', speed: 12 },
+      { text: '[O.R.O.R.A] DNS Flooding : 도메인 이름 조회 요청을 폭주시켜 네트워크를 마비시키는 DDoS의 한 유형입니다.', 'class': 'dim', speed: 12 },
+      { text: '[O.R.O.R.A] 봇넷 : 해커가 감염시킨 좀비 컴퓨터들의 네트워크입니다. DDoS 공격의 주요 도구입니다.', 'class': 'dim', speed: 12 },
       { text: '', 'class': '' },
       { text: '[단장] 웹 서버 접속 로그를 분석해서 공격 IP를 찾아라.', 'class': 'commander', delay: 300 },
       { text: '[단장] O.R.O.R.A가 완전히 끊기면 우린 장님이야!', 'class': 'commander', delay: 400 },
@@ -1881,7 +2662,7 @@ WS.stages = [
       { text: '[단장] O.R.O.R.A가 다시 안정화됐어. 위성 링크도 정상이야.', 'class': 'commander', delay: 300 },
       { text: '[단장] 놈들의 성동격서... 완전히 막아냈다.', 'class': 'commander', delay: 400 },
       { text: '', 'class': '' },
-      { text: '✓ 임무 20 완료: DDoS 방어 - O.R.O.R.A 통신 보호 성공', 'class': 'success', delay: 500 },
+      { text: '✓ 임무 25 완료: DDoS 방어 - O.R.O.R.A 통신 보호 성공', 'class': 'success', delay: 500 },
       { text: '', 'class': '' },
     ],
     hints: [
@@ -1920,75 +2701,80 @@ WS.stages = [
       { text: '│  [✓] 임무 6:  크론잡 지속성 제거     - 완료               │', 'class': 'success', speed: 10 },
       { text: '│  [✓] 임무 7:  유령 계정 & 백도어     - 완료               │', 'class': 'success', speed: 10 },
       { text: '│  [✓] 임무 8:  웹셸 제거             - 완료               │', 'class': 'success', speed: 10 },
-      { text: '│  [✓] 임무 9:  SSH 보안 강화         - 완료               │', 'class': 'success', speed: 10 },
-      { text: '│  [✓] 임무 10: 포렌식 분석           - 완료               │', 'class': 'success', speed: 10 },
-      { text: '│  [✓] 임무 11: 해커 행적 역추적       - 완료               │', 'class': 'success', speed: 10 },
-      { text: '│  [✓] 임무 12: 패스워드 보안 강화     - 완료               │', 'class': 'success', speed: 10 },
-      { text: '│  [✓] 임무 13: 취약점 스캔           - 완료               │', 'class': 'success', speed: 10 },
-      { text: '│  [✓] 임무 14: 최종 시스템 잠금       - 완료               │', 'class': 'success', speed: 10 },
+      { text: '│  [✓] 임무 9:  내부망 RAT 탐지       - 완료               │', 'class': 'success', speed: 10 },
+      { text: '│  [✓] 임무 10: RAT 프로세스 제거      - 완료               │', 'class': 'success', speed: 10 },
+      { text: '│  [✓] 임무 11: 정보 유출 상황 파악     - 완료               │', 'class': 'success', speed: 10 },
+      { text: '│  [✓] 임무 12: 개인정보 DB 암호화     - 완료               │', 'class': 'success', speed: 10 },
+      { text: '│  [✓] 임무 13: 평문 데이터 영구 삭제   - 완료               │', 'class': 'success', speed: 10 },
+      { text: '│  [✓] 임무 14: SSH 보안 강화         - 완료               │', 'class': 'success', speed: 10 },
+      { text: '│  [✓] 임무 15: 포렌식 분석           - 완료               │', 'class': 'success', speed: 10 },
+      { text: '│  [✓] 임무 16: 해커 행적 역추적       - 완료               │', 'class': 'success', speed: 10 },
+      { text: '│  [✓] 임무 17: 패스워드 보안 강화     - 완료               │', 'class': 'success', speed: 10 },
+      { text: '│  [✓] 임무 18: 취약점 스캔           - 완료               │', 'class': 'success', speed: 10 },
+      { text: '│  [✓] 임무 19: 최종 시스템 잠금       - 완료               │', 'class': 'success', speed: 10 },
       { text: '│                                                        │', 'class': 'objective' },
       { text: '│  ── ACT 2: Operation Ironclad (SCADA 방어) ──          │', 'class': 'objective', speed: 10 },
-      { text: '│  [✓] 임무 15: Modbus 트래픽 캡처    - 완료               │', 'class': 'success', speed: 10 },
-      { text: '│  [✓] 임무 16: HMI 무결성 검증       - 완료               │', 'class': 'success', speed: 10 },
-      { text: '│  [✓] 임무 17: 펌웨어 롤백           - 완료               │', 'class': 'success', speed: 10 },
-      { text: '│  [✓] 임무 18: OT 네트워크 격리      - 완료               │', 'class': 'success', speed: 10 },
-      { text: '│  [✓] 임무 19: 비상 냉각 밸브 복구    - 완료               │', 'class': 'success', speed: 10 },
-      { text: '│  [✓] 임무 20: DDoS 방어 (O.R.O.R.A) - 완료               │', 'class': 'success', speed: 10 },
+      { text: '│  [✓] 임무 20: Modbus 트래픽 캡처    - 완료               │', 'class': 'success', speed: 10 },
+      { text: '│  [✓] 임무 21: HMI 무결성 검증       - 완료               │', 'class': 'success', speed: 10 },
+      { text: '│  [✓] 임무 22: 펌웨어 롤백           - 완료               │', 'class': 'success', speed: 10 },
+      { text: '│  [✓] 임무 23: OT 네트워크 격리      - 완료               │', 'class': 'success', speed: 10 },
+      { text: '│  [✓] 임무 24: 비상 냉각 밸브 복구    - 완료               │', 'class': 'success', speed: 10 },
+      { text: '│  [✓] 임무 25: DDoS 방어 (O.R.O.R.A) - 완료               │', 'class': 'success', speed: 10 },
       { text: '│                                                        │', 'class': 'objective' },
-      { text: '│  위협 그룹: Gashiga APT Group - 무력화                  │', 'class': 'error', speed: 10 },
+      { text: '│  위협 그룹: Blackwing APT Group - 무력화                  │', 'class': 'error', speed: 10 },
       { text: '│  TITAN MAINFRAME: NEUTRALIZED                          │', 'class': 'success', speed: 10 },
       { text: '│                                                        │', 'class': 'objective' },
       { text: '│  작전 상태: █████████████████████ 완전 성공              │', 'class': 'success' },
       { text: '│                                                        │', 'class': 'objective' },
       { text: '└────────────────────────────────────────────────────────┘', 'class': 'objective' },
       { text: '', 'class': '', delay: 600 },
-      { text: '[단장] {name}, 오늘 네가 수행한 작업을 정리하면:', 'class': 'commander', delay: 300 },
+      { text: '[O.R.O.R.A] 공격자 인프라 분석 완료. Blackwing C2 서버 로그에서 최종 메시지 복호화:', 'class': 'system', delay: 400 },
       { text: '', 'class': '' },
-      { text: '  ── ACT 1: 서버 침해 대응 ──', 'class': 'objective', speed: 15 },
-      { text: '  1.  grep으로 브루트포스 공격 로그 분석', 'class': 'narrator', speed: 15 },
-      { text: '  2.  netstat/lsof로 백도어 네트워크 연결 추적', 'class': 'narrator', speed: 15 },
-      { text: '  3.  iptables로 공격자 IP 원천 봉쇄', 'class': 'narrator', speed: 15 },
-      { text: '  4.  리버스 셸 & 크립토마이너 프로세스 제거', 'class': 'narrator', speed: 15 },
-      { text: '  5.  크론잡 자동 부활 메커니즘 차단', 'class': 'narrator', speed: 15 },
-      { text: '  6.  SUID 백도어 & 유령 계정 색출 제거', 'class': 'narrator', speed: 15 },
-      { text: '  7.  웹셸 탐지 및 삭제', 'class': 'narrator', speed: 15 },
-      { text: '  8.  SSH 설정 강화로 재침투 방지', 'class': 'narrator', speed: 15 },
-      { text: '  9.  포렌식 분석으로 위협 그룹 & 차기 공격 목표 식별', 'class': 'narrator', speed: 15 },
-      { text: '  10. lastb/history로 해커 전체 행적 역추적', 'class': 'narrator', speed: 15 },
-      { text: '  11. 패스워드 정책 강화 (chage)', 'class': 'narrator', speed: 15 },
-      { text: '  12. nmap 취약점 스캔으로 잔여 위협 확인', 'class': 'narrator', speed: 15 },
-      { text: '  13. chattr/auditctl로 핵심 파일 잠금 & 감시', 'class': 'narrator', speed: 15 },
+      { text: '  ┌──────────────────────────────────────────────┐', 'class': 'enemy' },
+      { text: '  │  인정한다, {name}. 이번은 네가 이겼어.        │', 'class': 'enemy', speed: 12 },
+      { text: '  │  서버도 막고, SCADA도 지키고, DDoS까지.       │', 'class': 'enemy', speed: 12 },
+      { text: '  │                                              │', 'class': 'enemy' },
+      { text: '  │  하지만 기억해. 나는 사라지는 게 아니야.       │', 'class': 'enemy', speed: 12 },
+      { text: '  │  버전을 올리는 거지.                          │', 'class': 'enemy', speed: 12 },
+      { text: '  │                                              │', 'class': 'enemy' },
+      { text: '  │  다음에 만나면... v3.0으로 찾아가마.           │', 'class': 'enemy', speed: 12 },
+      { text: '  │                          -- Blackwing          │', 'class': 'enemy', speed: 12 },
+      { text: '  └──────────────────────────────────────────────┘', 'class': 'enemy' },
+      { text: '', 'class': '', delay: 600 },
+      { text: '[단장] ...', 'class': 'commander', delay: 500 },
+      { text: '[단장] {name}.', 'class': 'commander', delay: 400 },
       { text: '', 'class': '' },
-      { text: '  ── ACT 2: SCADA/OT 방어 + DDoS 대응 ──', 'class': 'objective', speed: 15 },
-      { text: '  14. tcpdump로 Modbus 프로토콜 악성 트래픽 캡처', 'class': 'narrator', speed: 15 },
-      { text: '  15. sha256sum으로 HMI 바이너리 변조 탐지', 'class': 'narrator', speed: 15 },
-      { text: '  16. cp로 PLC 펌웨어 원본 복원 (롤백)', 'class': 'narrator', speed: 15 },
-      { text: '  17. route del로 공격자 C2 네트워크 완전 격리', 'class': 'narrator', speed: 15 },
-      { text: '  18. ps/kill로 냉각 밸브 잠금 해제 → 플라즈마 코어 안정화', 'class': 'narrator', speed: 15 },
-      { text: '  19. DDoS 로그 분석 + iptables로 봇넷 대역 차단', 'class': 'narrator', speed: 15 },
+      { text: '[단장] 솔직히 말할게. 오늘 작전은 아슬아슬했어.', 'class': 'commander', delay: 400 },
+      { text: '[단장] 브루트포스로 서버가 뚫렸을 때, 난 최악을 각오했었다.', 'class': 'commander', delay: 300 },
+      { text: '[단장] 플라즈마 코어가 3,000도에 육박했을 때는... 심장이 멎는 줄 알았고.', 'class': 'commander', delay: 300 },
       { text: '', 'class': '' },
-      { text: '[단장] IT 보안부터 OT/SCADA, 그리고 DDoS 방어까지...', 'class': 'commander', delay: 400 },
-      { text: '[단장] 사이버와 물리적 세계의 경계를 넘나들며 지켜냈다.', 'class': 'commander', delay: 300 },
+      { text: '[단장] 근데 네가 해냈어.', 'class': 'commander', delay: 500 },
+      { text: '[단장] 로그 한 줄에서 침입을 잡아냈고,', 'class': 'commander', delay: 300 },
+      { text: '[단장] 프로세스 하나하나 추적해서 놈의 흔적을 전부 지웠고,', 'class': 'commander', delay: 300 },
+      { text: '[단장] 공장이 폭발하기 29도 전에 냉각 밸브를 되살렸다.', 'class': 'commander', delay: 300 },
       { text: '', 'class': '' },
-      { text: '[단장] {name}, 마지막으로 한 가지 말해두겠다.', 'class': 'commander', delay: 400 },
+      { text: '[단장] IT 서버부터 산업 제어 시스템, 그리고 대규모 DDoS까지...', 'class': 'commander', delay: 300 },
+      { text: '[단장] 사이버와 물리적 세계의 경계를 넘나들며 지켜냈다.', 'class': 'commander', delay: 400 },
       { text: '', 'class': '' },
-      { text: '[단장] 2026년 현재, AI가 만든 코드의 45%에 보안 취약점이 있다.', 'class': 'commander', delay: 300 },
-      { text: '[단장] DDoS 공격은 전년 대비 55.5% 급증했고,', 'class': 'commander', delay: 300 },
-      { text: '[단장] 침해사고의 93%가 보안 인력이 부족한 중소기업에서 발생한다.', 'class': 'commander', delay: 300 },
+      { text: '[O.R.O.R.A] {name} 요원 평가 기록:', 'class': 'system', delay: 400 },
+      { text: '[O.R.O.R.A] 탐지 능력: ██████████ 탁월', 'class': 'success', speed: 12 },
+      { text: '[O.R.O.R.A] 대응 속도: ██████████ 탁월', 'class': 'success', speed: 12 },
+      { text: '[O.R.O.R.A] 위기 대처: ██████████ 탁월', 'class': 'success', speed: 12 },
+      { text: '[O.R.O.R.A] 종합 판정: 최우수 요원 등급 부여를 건의합니다.', 'class': 'success', delay: 300 },
       { text: '', 'class': '' },
-      { text: '[단장] 이 시대에 필요한 건 세 가지야:', 'class': 'commander', delay: 400 },
-      { text: '  1. 제로 트러스트 - "아무것도 신뢰하지 말고, 항상 검증하라"', 'class': 'objective', speed: 15 },
-      { text: '  2. DevSecOps - 개발 단계부터 보안을 내재화하라', 'class': 'objective', speed: 15 },
-      { text: '  3. 회복 탄력성 - 뚫릴 수 있다. 하지만 빠르게 복구할 수 있어야 한다', 'class': 'objective', speed: 15 },
+      { text: '[단장] Blackwing는 다시 올 거야. 그건 확실해.', 'class': 'commander', delay: 400 },
+      { text: '[단장] 하지만 그때도 우리가 먼저 발견하고, 먼저 막으면 돼.', 'class': 'commander', delay: 300 },
+      { text: '[단장] 완벽한 방어는 없어. 뚫릴 수 있다는 걸 인정하는 것,', 'class': 'commander', delay: 300 },
+      { text: '[단장] 그리고 뚫려도 빠르게 복구하는 것. 그게 진짜 실력이야.', 'class': 'commander', delay: 300 },
       { text: '', 'class': '' },
-      { text: '[단장] 완벽한 방어는 없어. 하지만 공격자보다 한 발 앞서는 것,', 'class': 'commander', delay: 300 },
-      { text: '[단장] 그것이 바로 화이트 해커의 존재 이유다.', 'class': 'commander', delay: 300 },
+      { text: '[단장] 수고했다, {name}. 네 덕분에 수많은 생명이 지켜졌다.', 'class': 'commander', delay: 500 },
+      { text: '[단장] 오늘의 네 활약은... 오래 기억될 거야.', 'class': 'commander', delay: 400 },
       { text: '', 'class': '' },
-      { text: '[단장] 수고했다, {name}. 네 덕분에 수많은 생명이 지켜졌다.', 'class': 'commander', delay: 400 },
-      { text: '[단장] 오늘의 네 활약은 전설이 될 거야.', 'class': 'commander', delay: 300 },
-      { text: '[단장] G-DECK을 통해 다시 호출하겠다. 그때까지... 대기해라, 요원.', 'class': 'commander', delay: 500 },
+      { text: '[단장] G-DECK을 통해 다시 호출하겠다.', 'class': 'commander', delay: 300 },
+      { text: '[단장] 그때까지 쉬어라, 요원. ...아니, {name}.', 'class': 'commander', delay: 500 },
       { text: '', 'class': '' },
       { text: '[O.R.O.R.A] 작전 로그 암호화 완료. 상부 전달 대기 중.', 'class': 'system', delay: 300 },
+      { text: '[O.R.O.R.A] {name} 요원님, 함께 작전하여 영광이었습니다.', 'class': 'system', delay: 400 },
       { text: '[G-DECK] 세션 종료. 배터리 절전 모드 전환.', 'class': 'system', delay: 300 },
       { text: '', 'class': '' },
       { text: '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'class': 'dim' },

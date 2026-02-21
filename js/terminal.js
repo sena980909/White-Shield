@@ -58,9 +58,9 @@ WS.Terminal = class Terminal {
       function typeNext() {
         if (i < text.length) {
           lineEl.textContent += text[i];
-          if (self.audio) self.audio.tick();
+          if (self.audio && i % 3 === 0) self.audio.tick();
           i++;
-          self._scrollToBottom();
+          if (i % 8 === 0 || i === text.length) self._scrollToBottom();
           setTimeout(typeNext, speed);
         } else {
           lineEl.classList.remove('typing-cursor');
@@ -166,7 +166,12 @@ WS.Terminal = class Terminal {
   /* ── Private Helpers ── */
 
   _scrollToBottom() {
-    this.container.scrollTop = this.container.scrollHeight;
+    var self = this;
+    if (this._scrollRAF) return;
+    this._scrollRAF = requestAnimationFrame(function() {
+      self.container.scrollTop = self.container.scrollHeight;
+      self._scrollRAF = null;
+    });
   }
 
   _wait(ms) {

@@ -27,6 +27,9 @@ html, body {
   flex-direction: column;
   position: relative;
   z-index: 1;
+  /* Firefox scrollbar */
+  scrollbar-width: thin;
+  scrollbar-color: #333 #0a0a0a;
 }
 
 #terminal::-webkit-scrollbar {
@@ -82,7 +85,7 @@ html, body {
   font-family: inherit;
   font-size: inherit;
   line-height: inherit;
-  caret-color: transparent; /* hide native caret, we use custom cursor */
+  caret-color: #33ff33;
   padding: 0;
   width: 1ch;
   min-width: 1ch;
@@ -95,6 +98,22 @@ html, body {
   flex: 1;
   min-height: 1.5em;
   cursor: text;
+}
+
+/* ── Enter Key Hint ── */
+#enter-hint {
+  color: #555;
+  font-size: 11px;
+  margin-left: 8px;
+  user-select: none;
+  flex-shrink: 0;
+}
+
+/* ── Input Focus Indicator ── */
+#input-line:not(.hidden) {
+  border-left: 2px solid #33ff33;
+  padding-left: 6px;
+  margin-left: -8px;
 }
 
 /* ── Speaker Color Classes ── */
@@ -144,7 +163,7 @@ html, body {
 }
 
 .dim {
-  color: #555555;
+  color: #888888;
 }
 
 .bold {
@@ -238,12 +257,22 @@ html, body {
 /* ── Mobile Responsive ── */
 @media (max-width: 600px) {
   html, body {
-    font-size: 13px;
+    font-size: 14px;
   }
 
   #terminal {
     padding: 10px 12px;
     padding-top: 48px;
+    padding-bottom: 60px;
+  }
+
+  #input-line:not(.hidden) {
+    position: sticky;
+    bottom: 0;
+    background: #0a0a0a;
+    padding-top: 6px;
+    padding-bottom: 6px;
+    z-index: 5;
   }
 
   #bgm-panel {
@@ -256,10 +285,14 @@ html, body {
   #bgm-volume {
     width: 60px;
   }
+
+  #enter-hint {
+    display: none;
+  }
 }
 
 @media (max-width: 400px) {
   html, body {
-    font-size: 12px;
+    font-size: 13px;
   }
 }
